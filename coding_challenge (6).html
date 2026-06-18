@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coding Challenge for Kids - SMR Robot</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Prompt for Thai -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Prompt', 'sans-serif'] },
+                    colors: {
+                        stem: { dark: '#0f172a', panel: '#1e293b', primary: '#0ea5e9', secondary: '#8b5cf6', accent: '#f59e0b', success: '#10b981', danger: '#ef4444' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #0f172a; color: white; overflow-x: hidden; }
+        .grid-container {
+            display: grid;
+            aspect-ratio: 1 / 1;
+            width: 100%;
+            max-width: 500px;
+            background-color: #334155;
+            border: 4px solid #475569;
+            border-radius: 12px;
+            position: relative;
+            margin: 0 auto;
+        }
+        .grid-cell { border: 1px dashed #475569; box-sizing: border-box; display: flex; justify-content: center; align-items: center; }
+        
+        #robot {
+            position: absolute;
+            transition: transform 0.4s ease-in-out;
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .block-item {
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.1s, filter 0.2s;
+        }
+        .block-item:active { transform: scale(0.95); }
+        .block-item:hover { filter: brightness(1.1); }
+        
+        /* Custom Scrollbar for Chat & Workspace */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #1e293b; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+        .coin-anim { animation: bounce 2s infinite; }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* SVG Robot Glow & Gripper Animation */
+        .robot-glow { filter: drop-shadow(0 0 8px #0ea5e9); }
+        .gripper-left { animation: clamp-left 2s infinite ease-in-out; transform-origin: 40px 15px; }
+        .gripper-right { animation: clamp-right 2s infinite ease-in-out; transform-origin: 60px 15px; }
+
+        @keyframes clamp-left {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(15deg); }
+        }
+        @keyframes clamp-right {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(-15deg); }
+        }
+    </style>
+</head>
+<body class="h-screen flex flex-col font-sans">
+
+    <!-- Header -->
+    <header class="bg-stem-panel shadow-md p-4 flex flex-col sm:flex-row justify-between items-center gap-2 z-20">
+        <div class="flex items-center gap-3">
+            <i class="fa-solid fa-robot text-stem-primary text-3xl"></i>
+            <h1 class="text-xl md:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-stem-primary to-stem-secondary">
+                SMR Coding Challenge
+            </h1>
+        </div>
+        <div class="flex gap-4 bg-stem-dark p-2 rounded-lg border border-slate-700">
+            <div class="flex flex-col items-center px-2 border-r border-slate-600">
+                <span class="text-xs text-slate-400">คะแนน</span>
+                <span id="score-display" class="font-bold text-stem-accent text-lg">0</span>
+            </div>
+            <div class="flex flex-col items-center px-2 border-r border-slate-600">
+                <span class="text-xs text-slate-400">เหรียญ</span>
+                <span id="coin-display" class="font-bold text-yellow-400 text-lg">0</span>
+            </div>
+            <div class="flex flex-col items-center px-2">
+                <span class="text-xs text-slate-400">ด่าน</span>
+                <span id="level-display" class="font-bold text-stem-success text-lg">1</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Chapter Selection -->
+    <div class="flex flex-wrap justify-center gap-2 md:gap-4 p-3 bg-stem-panel/80 border-b border-slate-700 z-10 relative shadow-sm">
+        <button id="btn-ch1" onclick="gotoChapter(1)" class="px-3 md:px-5 py-1.5 rounded-full bg-stem-primary text-white text-xs md:text-sm font-bold shadow transition-all hover:scale-105">บทที่ 1 (ด่าน 1-5)</button>
+        <button id="btn-ch2" onclick="gotoChapter(2)" class="px-3 md:px-5 py-1.5 rounded-full bg-slate-600 hover:bg-stem-secondary text-white text-xs md:text-sm font-bold shadow transition-all hover:scale-105">บทที่ 2 (ด่าน 6-10)</button>
+        <button id="btn-ch3" onclick="gotoChapter(3)" class="px-3 md:px-5 py-1.5 rounded-full bg-slate-600 hover:bg-stem-accent text-white text-xs md:text-sm font-bold shadow transition-all hover:scale-105">บทที่ 3 (ด่าน 11-15)</button>
+        <button id="btn-ch4" onclick="gotoChapter(4)" class="px-3 md:px-5 py-1.5 rounded-full bg-slate-600 hover:bg-stem-danger text-white text-xs md:text-sm font-bold shadow transition-all hover:scale-105">บทที่ 4 (ด่าน 16-20) 🛠️</button>
+    </div>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-hidden flex flex-col lg:flex-row p-2 lg:p-4 gap-4">
+        
+        <!-- Left: Game Area -->
+        <section class="w-full lg:w-1/2 flex flex-col">
+            <div class="bg-stem-panel rounded-xl p-4 flex-1 flex flex-col relative shadow-lg">
+                <h2 id="level-title" class="text-lg font-semibold text-center mb-4 text-slate-200">ด่านที่ 1: เดินหน้า</h2>
+                <div class="flex-1 flex items-center justify-center">
+                    <div id="grid-board" class="grid-container">
+                        <!-- Cells generated by JS -->
+                        <!-- Robot -->
+                        <div id="robot">
+                            <svg viewBox="0 0 100 100" class="w-full h-full robot-glow">
+                                <!-- Wheels (SMR 4-Wheel Robot) -->
+                                <rect x="8" y="18" width="16" height="28" rx="4" fill="#1e293b"/>
+                                <rect x="76" y="18" width="16" height="28" rx="4" fill="#1e293b"/>
+                                <rect x="8" y="54" width="16" height="28" rx="4" fill="#1e293b"/>
+                                <rect x="76" y="54" width="16" height="28" rx="4" fill="#1e293b"/>
+                                
+                                <!-- Chassis Chassis Frame -->
+                                <rect x="22" y="14" width="56" height="72" rx="12" fill="#0f172a" stroke="#1e293b" stroke-width="2"/>
+                                <rect x="25" y="17" width="50" height="66" rx="10" fill="#0ea5e9"/>
+                                
+                                <!-- Decorative Grid Pattern on Robot -->
+                                <rect x="35" y="45" width="30" height="25" rx="5" fill="#1e293b" opacity="0.4"/>
+                                
+                                <!-- Front Robotic Gripper Attachment (มือคีบหน้าสีทอง) -->
+                                <g id="gripper-attachment">
+                                    <!-- Base connector -->
+                                    <rect x="38" y="8" width="24" height="8" fill="#475569" rx="2"/>
+                                    <!-- Left Gripper Arm -->
+                                    <path class="gripper-left" d="M 40 12 C 30 0, 25 -5, 30 -10 C 35 -15, 45 -8, 42 10" fill="#f59e0b" stroke="#d97706" stroke-width="1"/>
+                                    <!-- Right Gripper Arm -->
+                                    <path class="gripper-right" d="M 60 12 C 70 0, 75 -5, 70 -10 C 65 -15, 55 -8, 58 10" fill="#f59e0b" stroke="#d97706" stroke-width="1"/>
+                                </g>
+
+                                <!-- Head/Direction Indicator (Top is Forward) -->
+                                <circle cx="50" cy="32" r="12" fill="#fff"/>
+                                <circle cx="50" cy="32" r="6" fill="#0ea5e9"/>
+                                <path d="M43,21 L50,8 L57,21 Z" fill="#f59e0b"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Game Controls -->
+                <div class="mt-4 flex justify-center gap-3">
+                    <button id="btn-run" class="bg-stem-success hover:bg-emerald-400 text-white font-bold py-2 px-6 rounded-full shadow-lg shadow-emerald-500/30 transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-play"></i> Run
+                    </button>
+                    <button id="btn-reset" class="bg-slate-600 hover:bg-slate-500 text-white font-bold py-2 px-6 rounded-full shadow-lg transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-rotate-left"></i> Reset
+                    </button>
+                    <button id="btn-next" class="hidden bg-stem-primary hover:bg-blue-400 text-white font-bold py-2 px-6 rounded-full shadow-lg transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-forward-step"></i> Next Level
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Right: Coding & AI Area -->
+        <section class="w-full lg:w-1/2 flex flex-col gap-4 h-[60vh] lg:h-auto">
+            
+            <!-- Blockly / Workspace -->
+            <div class="bg-stem-panel rounded-xl p-4 flex-1 flex flex-col shadow-lg">
+                <!-- Palette (กล่องเครื่องมือ ย้ายมาอยู่ด้านบน) -->
+                <h3 class="font-semibold text-slate-200 mb-2 text-sm"><i class="fa-solid fa-toolbox"></i> กล่องเครื่องมือ</h3>
+                <div class="grid grid-cols-4 sm:grid-cols-4 gap-2 mb-4">
+                    <div onclick="addBlock('forward')" class="block-item bg-blue-500 rounded p-1.5 text-center shadow-md flex flex-col items-center justify-center h-12 md:h-14">
+                        <i class="fa-solid fa-arrow-up mb-1 text-sm md:text-base"></i>
+                        <span class="text-[9px] md:text-[10px] font-bold">เดินหน้า</span>
+                    </div>
+                    <div onclick="addBlock('backward')" class="block-item bg-indigo-500 rounded p-1.5 text-center shadow-md flex flex-col items-center justify-center h-12 md:h-14">
+                        <i class="fa-solid fa-arrow-down mb-1 text-sm md:text-base"></i>
+                        <span class="text-[9px] md:text-[10px] font-bold">ถอยหลัง</span>
+                    </div>
+                    <div onclick="addBlock('left')" class="block-item bg-purple-500 rounded p-1.5 text-center shadow-md flex flex-col items-center justify-center h-12 md:h-14">
+                        <i class="fa-solid fa-rotate-left mb-1 text-sm md:text-base"></i>
+                        <span class="text-[9px] md:text-[10px] font-bold">เลี้ยวซ้าย</span>
+                    </div>
+                    <div onclick="addBlock('right')" class="block-item bg-pink-500 rounded p-1.5 text-center shadow-md flex flex-col items-center justify-center h-12 md:h-14">
+                        <i class="fa-solid fa-rotate-right mb-1 text-sm md:text-base"></i>
+                        <span class="text-[9px] md:text-[10px] font-bold">เลี้ยวขวา</span>
+                    </div>
+                    <div onclick="addBlock('pick')" class="block-item bg-emerald-500 rounded p-1.5 text-center shadow-md flex flex-col items-center justify-center h-12 md:h-14">
+                        <i class="fa-solid fa-hand-paper mb-1 text-sm md:text-base"></i>
+                        <span class="text-[9px] md:text-[10px] font-bold">คีบ</span>
+                    </div>
+                    <div onclick="addBlock('drop')" class="block-item bg-yellow-500 rounded p-1.5 text-center shadow-md flex flex-col items-center justify-center h-12 md:h-14">
+                        <i class="fa-solid fa-hand-back-fist mb-1 text-sm md:text-base text-slate-900"></i>
+                        <span class="text-[9px] md:text-[10px] font-bold text-slate-900">ปล่อย</span>
+                    </div>
+                    <div onclick="addBlock('random')" class="block-item bg-cyan-500 rounded p-1.5 text-center shadow-md flex flex-col items-center justify-center h-12 md:h-14">
+                        <i class="fa-solid fa-shuffle mb-1 text-sm md:text-base"></i>
+                        <span class="text-[9px] md:text-[10px] font-bold">สุ่ม</span>
+                    </div>
+                    <div onclick="addBlock('loop')" class="block-item bg-orange-500 rounded p-1.5 text-center shadow-md flex flex-col items-center justify-center h-12 md:h-14 relative">
+                        <i class="fa-solid fa-repeat mb-1 text-sm md:text-base"></i>
+                        <span class="text-[9px] md:text-[10px] font-bold">ทำซ้ำ(2x)</span>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="font-semibold text-slate-200 text-sm"><i class="fa-solid fa-puzzle-piece text-stem-secondary"></i> พื้นที่เขียนคำสั่ง</h3>
+                    <span class="text-[10px] text-slate-400">(แตะบล็อกด้านบนเพื่อเพิ่มคำสั่ง)</span>
+                </div>
+                
+                <!-- Workspace List (ขนาดคำสั่งสั้นลงและมี Scrollbar) -->
+                <div id="workspace" class="flex-1 bg-stem-dark rounded-lg p-2 overflow-y-auto flex flex-col gap-1.5 border-2 border-slate-700 border-dashed min-h-[150px] max-h-[200px] md:max-h-[250px]">
+                    <!-- Commands will appear here -->
+                    <div id="workspace-empty" class="text-slate-500 text-center mt-10 text-xs md:text-sm">
+                        ยังไม่มีคำสั่ง<br>แตะปุ่มด้านบนเพื่อเลือกคำสั่งให้หุ่นยนต์
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Chat -->
+            <div class="bg-stem-panel rounded-xl p-4 h-64 flex flex-col shadow-lg border border-stem-secondary/30">
+                <div class="flex items-center gap-2 mb-2">
+                    <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%238b5cf6'/><circle cx='35' cy='40' r='8' fill='white'/><circle cx='65' cy='40' r='8' fill='white'/><path d='M 30 70 Q 50 85 70 70' fill='none' stroke='white' stroke-width='6' stroke-linecap='round'/></svg>" class="w-8 h-8">
+                    <h3 class="font-semibold text-stem-secondary text-sm md:text-base">ผู้ช่วย AI: เจ้าด็อกเตอร์</h3>
+                </div>
+                
+                <div id="chat-history" class="flex-1 bg-stem-dark rounded-lg p-3 overflow-y-auto flex flex-col gap-3 text-sm">
+                    <div class="flex gap-2">
+                        <div class="bg-stem-secondary/20 text-white p-2 rounded-lg rounded-tl-none border border-stem-secondary/50 max-w-[85%] text-xs md:text-sm">
+                            สวัสดีครับน้องๆ! ด็อกเตอร์เอง มีคำถามเรื่อง Coding ภาษาไทย ถามมาได้เลยนะ! 🤖✨
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-2 flex gap-2">
+                    <input type="text" id="ai-input" placeholder="ถามด็อกเตอร์ เช่น Loop คืออะไร?" class="flex-1 bg-slate-700 text-white px-3 py-2 rounded-lg outline-none focus:ring-2 focus:ring-stem-secondary transition-all text-xs md:text-sm">
+                    <button id="btn-send-ai" class="bg-stem-secondary hover:bg-purple-500 text-white px-4 py-2 rounded-lg transition-all">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Level Complete Modal -->
+    <div id="modal-success" class="fixed inset-0 bg-black/80 hidden items-center justify-center z-50 backdrop-blur-sm">
+        <div class="bg-stem-panel p-8 rounded-2xl text-center max-w-sm w-full border-2 border-stem-success shadow-[0_0_30px_rgba(16,185,129,0.5)] transform scale-90 transition-transform duration-300" id="modal-content">
+            <i class="fa-solid fa-star text-yellow-400 text-6xl mb-4 animate-bounce"></i>
+            <h2 class="text-3xl font-bold text-white mb-2">ผ่านด่านแล้ว!</h2>
+            <p class="text-slate-300 mb-6" id="modal-message">เก่งมาก! หุ่นยนต์ทำตามคำสั่งได้สมบูรณ์แบบ</p>
+            <div class="flex justify-center gap-4">
+                <button onclick="closeModal()" class="bg-stem-primary hover:bg-blue-500 text-white font-bold py-2 px-6 rounded-full transition-all">
+                    ไปด่านต่อไป <i class="fa-solid fa-arrow-right ml-1"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Message Box -->
+    <div id="msg-box" class="fixed top-5 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-6 py-3 rounded-full shadow-lg font-bold opacity-0 pointer-events-none transition-opacity duration-300 z-50 flex items-center gap-2 text-sm md:text-base">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <span id="msg-text">ข้อความ</span>
+    </div>
+
+    <script>
+        // --- GAME STATE & CONFIG ---
+        const apiKey = ""; // Provided by execution environment
+        let currentGridSize = 5;
+        let currentLevel = 0;
+        let score = 0;
+        let coins = 0;
+        let isRunning = false;
+        
+        // Robot State
+        let robot = { x: 0, y: 0, dir: 0, rotDeg: 0 }; // dir: 0=Up, 1=Right, 2=Down, 3=Left
+
+        const levels = [
+            // === บทที่ 1 ===
+            {
+                title: "ด่านที่ 1: เดินหน้าลุยเลย!",
+                gridSize: 5,
+                start: { x: 2, y: 4, dir: 0 },
+                target: { x: 2, y: 1 },
+                obstacles: [],
+                coins: []
+            },
+            {
+                title: "ด่านที่ 2: เลี้ยวซ้ายระวังชน",
+                gridSize: 5,
+                start: { x: 4, y: 3, dir: 0 },
+                target: { x: 1, y: 3 },
+                obstacles: [],
+                coins: []
+            },
+            {
+                title: "ด่านที่ 3: เลี้ยวขวาพาเพลิน",
+                gridSize: 5,
+                start: { x: 0, y: 1, dir: 1 }, // facing right
+                target: { x: 3, y: 4 },
+                obstacles: [],
+                coins: []
+            },
+            {
+                title: "ด่านที่ 4: นักล่าเหรียญทอง",
+                gridSize: 5,
+                start: { x: 2, y: 4, dir: 0 },
+                target: { x: 2, y: 0 },
+                obstacles: [],
+                coins: [{x: 2, y: 2}]
+            },
+            {
+                title: "ด่านที่ 5: หลบหลีกสิ่งกีดขวาง",
+                gridSize: 5,
+                start: { x: 2, y: 4, dir: 0 },
+                target: { x: 2, y: 0 },
+                obstacles: [{x: 2, y: 2}, {x: 1, y: 2}, {x: 3, y: 2}], // wall
+                coins: [{x: 0, y: 2}, {x: 4, y: 2}]
+            },
+            // === บทที่ 2 ===
+            {
+                title: "ด่านที่ 6 (บทที่ 2): ซิกแซกทะลวงฟัน",
+                gridSize: 5,
+                start: { x: 0, y: 4, dir: 0 },
+                target: { x: 4, y: 0 },
+                obstacles: [{x: 1, y: 4}, {x: 1, y: 3}, {x: 1, y: 2}, {x: 3, y: 2}, {x: 3, y: 1}, {x: 3, y: 0}],
+                coins: [{x: 0, y: 2}, {x: 2, y: 2}, {x: 4, y: 2}]
+            },
+            {
+                title: "ด่านที่ 7 (บทที่ 2): ยูเทิร์นหรรษา",
+                gridSize: 5,
+                start: { x: 0, y: 0, dir: 1 }, // facing right
+                target: { x: 0, y: 2 },
+                obstacles: [{x: 1, y: 1}, {x: 2, y: 1}, {x: 3, y: 1}, {x: 4, y: 1}],
+                coins: [{x: 4, y: 0}, {x: 4, y: 2}]
+            },
+            {
+                title: "ด่านที่ 8 (บทที่ 2): นักเก็บเหรียญทางตรง",
+                gridSize: 5,
+                start: { x: 0, y: 4, dir: 1 }, // facing right
+                target: { x: 4, y: 4 },
+                obstacles: [{x: 1, y: 3}, {x: 2, y: 3}, {x: 3, y: 3}],
+                coins: [{x: 1, y: 4}, {x: 2, y: 4}, {x: 3, y: 4}]
+            },
+            {
+                title: "ด่านที่ 9 (บทที่ 2): ทางวงกต",
+                gridSize: 5,
+                start: { x: 2, y: 2, dir: 0 },
+                target: { x: 0, y: 0 },
+                obstacles: [{x: 1, y: 2}, {x: 2, y: 1}, {x: 3, y: 2}, {x: 2, y: 3}],
+                coins: [{x: 0, y: 4}, {x: 4, y: 4}]
+            },
+            {
+                title: "ด่านที่ 10 (บทที่ 2): บอสใหญ่!",
+                gridSize: 5,
+                start: { x: 4, y: 4, dir: 3 }, // facing left
+                target: { x: 0, y: 0 },
+                obstacles: [{x: 3, y: 4}, {x: 3, y: 3}, {x: 3, y: 2}, {x: 1, y: 0}, {x: 1, y: 1}, {x: 1, y: 2}, {x: 2, y: 2}],
+                coins: [{x: 4, y: 0}, {x: 0, y: 4}, {x: 2, y: 3}]
+            },
+            // === บทที่ 3 ===
+            {
+                title: "ด่านที่ 11 (บทที่ 3): สะพานแคบ",
+                gridSize: 5,
+                start: { x: 2, y: 4, dir: 0 },
+                target: { x: 2, y: 0 },
+                obstacles: [{x: 1, y: 4}, {x: 3, y: 4}, {x: 1, y: 3}, {x: 3, y: 3}, {x: 1, y: 2}, {x: 3, y: 2}, {x: 1, y: 1}, {x: 3, y: 1}],
+                coins: [{x: 2, y: 2}]
+            },
+            {
+                title: "ด่านที่ 12 (บทที่ 3): อ้อมเขากาวงกต",
+                gridSize: 5,
+                start: { x: 0, y: 4, dir: 0 },
+                target: { x: 4, y: 0 },
+                obstacles: [{x: 0, y: 3}, {x: 1, y: 3}, {x: 2, y: 3}, {x: 3, y: 3}, {x: 1, y: 1}, {x: 2, y: 1}, {x: 3, y: 1}, {x: 4, y: 1}],
+                coins: [{x: 4, y: 4}, {x: 0, y: 0}]
+            },
+            {
+                title: "ด่านที่ 13 (บทที่ 3): เก็บให้เรียบ",
+                gridSize: 5,
+                start: { x: 0, y: 0, dir: 1 },
+                target: { x: 4, y: 4 },
+                obstacles: [{x: 2, y: 0}, {x: 2, y: 2}, {x: 2, y: 4}],
+                coins: [{x: 4, y: 0}, {x: 0, y: 4}, {x: 0, y: 2}, {x: 4, y: 2}]
+            },
+            {
+                title: "ด่านที่ 14 (บทที่ 3): ฟันปลามหาประลัย",
+                gridSize: 5,
+                start: { x: 0, y: 0, dir: 2 }, // facing down
+                target: { x: 4, y: 4 },
+                obstacles: [{x: 1, y: 0}, {x: 1, y: 2}, {x: 1, y: 4}, {x: 3, y: 1}, {x: 3, y: 3}],
+                coins: [{x: 2, y: 1}, {x: 2, y: 3}]
+            },
+            {
+                title: "ด่านที่ 15 (บทที่ 3): สุดยอดโปรแกรมเมอร์",
+                gridSize: 5,
+                start: { x: 0, y: 4, dir: 1 }, // right
+                target: { x: 4, y: 0 },
+                obstacles: [{x: 1, y: 4}, {x: 1, y: 3}, {x: 2, y: 1}, {x: 3, y: 1}, {x: 3, y: 3}, {x: 4, y: 3}],
+                coins: [{x: 0, y: 0}, {x: 4, y: 4}, {x: 2, y: 2}]
+            },
+            // === บทที่ 4 (สนาม 10x10 ขนาดใหญ่ + ขีดความสามารถมือคีบ) ===
+            {
+                title: "ด่านที่ 16 (บทที่ 4): มิติใหม่ตาราง 10x10!",
+                gridSize: 10,
+                start: { x: 0, y: 9, dir: 0 }, // start bottom-left
+                target: { x: 9, y: 0 },        // end top-right
+                obstacles: [
+                    {x: 2, y: 9}, {x: 2, y: 8}, {x: 2, y: 7}, {x: 2, y: 6},
+                    {x: 5, y: 0}, {x: 5, y: 1}, {x: 5, y: 2}, {x: 5, y: 3}, {x: 5, y: 4}
+                ],
+                coins: [{x: 1, y: 7}, {x: 4, y: 5}, {x: 7, y: 2}]
+            },
+            {
+                title: "ด่านที่ 17 (บทที่ 4): ยุทธการล่าขุมทรัพย์ SMR",
+                gridSize: 10,
+                start: { x: 4, y: 8, dir: 0 },
+                target: { x: 4, y: 1 },
+                obstacles: [
+                    {x: 3, y: 3}, {x: 4, y: 3}, {x: 5, y: 3},
+                    {x: 3, y: 6}, {x: 4, y: 6}, {x: 5, y: 6}
+                ],
+                coins: [{x: 1, y: 4}, {x: 8, y: 4}, {x: 4, y: 5}]
+            },
+            {
+                title: "ด่านที่ 18 (บทที่ 4): คลื่นกีดขวางแนวขนาน",
+                gridSize: 10,
+                start: { x: 1, y: 9, dir: 0 },
+                target: { x: 8, y: 1 },
+                obstacles: [
+                    {x: 0, y: 7}, {x: 1, y: 7}, {x: 2, y: 7}, {x: 3, y: 7}, {x: 4, y: 7}, {x: 5, y: 7}, {x: 6, y: 7}, {x: 7, y: 7},
+                    {x: 2, y: 4}, {x: 3, y: 4}, {x: 4, y: 4}, {x: 5, y: 4}, {x: 6, y: 4}, {x: 7, y: 4}, {x: 8, y: 4}, {x: 9, y: 4}
+                ],
+                coins: [{x: 8, y: 8}, {x: 1, y: 5}, {x: 8, y: 3}]
+            },
+            {
+                title: "ด่านที่ 19 (บทที่ 4): หุบเขาเขาวงกตเหล็ก",
+                gridSize: 10,
+                start: { x: 0, y: 0, dir: 1 }, // face east
+                target: { x: 9, y: 9 },
+                obstacles: [
+                    {x: 0, y: 2}, {x: 1, y: 2}, {x: 2, y: 2}, {x: 3, y: 2}, {x: 4, y: 2}, {x: 6, y: 2}, {x: 7, y: 2}, {x: 8, y: 2}, {x: 9, y: 2},
+                    {x: 0, y: 6}, {x: 1, y: 6}, {x: 2, y: 6}, {x: 3, y: 6}, {x: 5, y: 6}, {x: 6, y: 6}, {x: 7, y: 6}, {x: 8, y: 6}, {x: 9, y: 6}
+                ],
+                coins: [{x: 5, y: 1}, {x: 4, y: 5}, {x: 4, y: 8}]
+            },
+            {
+                title: "ด่านที่ 20 (บทที่ 4): บอสสุดท้ายแห่งสถาบัน STEM",
+                gridSize: 10,
+                start: { x: 0, y: 9, dir: 0 },
+                target: { x: 9, y: 0 },
+                obstacles: [
+                    {x: 1, y: 1}, {x: 2, y: 2}, {x: 3, y: 3}, {x: 4, y: 4}, {x: 5, y: 5}, {x: 6, y: 6}, {x: 7, y: 7}, {x: 8, y: 8},
+                    {x: 8, y: 1}, {x: 7, y: 2}, {x: 6, y: 3}, {x: 4, y: 5}, {x: 3, y: 6}, {x: 2, y: 7}, {x: 1, y: 8}
+                ],
+                coins: [{x: 0, y: 0}, {x: 9, y: 9}, {x: 4, y: 0}, {x: 5, y: 9}, {x: 4, y: 2}]
+            }
+        ];
+
+        let currentGrid = [];
+        let commandsList = []; // Stores {type, id}
+
+        // --- AUDIO SYSTEM (Web Audio API) ---
+        let audioCtx;
+        function initAudio() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+
+        function playTone(freq, type, duration, vol=0.1) {
+            if (!audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        }
+
+        function soundCoin() { initAudio(); playTone(1200, 'sine', 0.1, 0.2); setTimeout(() => playTone(1600, 'sine', 0.2, 0.2), 100); }
+        function soundCrash() { initAudio(); playTone(100, 'sawtooth', 0.3, 0.2); }
+        function soundWin() { 
+            initAudio(); 
+            let t = 0;
+            [523.25, 659.25, 783.99, 1046.50].forEach(f => {
+                setTimeout(() => playTone(f, 'square', 0.2, 0.1), t);
+                t += 150;
+            });
+        }
+        function soundStep() { initAudio(); playTone(400, 'triangle', 0.1, 0.05); }
+
+        // --- DOM ELEMENTS ---
+        const boardEl = document.getElementById('grid-board');
+        const robotEl = document.getElementById('robot');
+        const workspaceEl = document.getElementById('workspace');
+        const emptyMsgEl = document.getElementById('workspace-empty');
+        const aiInput = document.getElementById('ai-input');
+        const chatHistory = document.getElementById('chat-history');
+
+        // --- INITIALIZATION ---
+        function drawGrid(size) {
+            currentGridSize = size || 5;
+            
+            // Set Dynamic Grid Columns/Rows
+            boardEl.style.gridTemplateColumns = `repeat(${currentGridSize}, 1fr)`;
+            boardEl.style.gridTemplateRows = `repeat(${currentGridSize}, 1fr)`;
+            
+            boardEl.innerHTML = '';
+            boardEl.appendChild(robotEl); // Keep robot element inside grid
+            
+            // Update robot element dimensions dynamically based on grid size
+            robotEl.style.width = `${100 / currentGridSize}%`;
+            robotEl.style.height = `${100 / currentGridSize}%`;
+
+            for (let y = 0; y < currentGridSize; y++) {
+                for (let x = 0; x < currentGridSize; x++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'grid-cell';
+                    cell.id = `cell-${x}-${y}`;
+                    boardEl.appendChild(cell);
+                }
+            }
+        }
+
+        function loadLevel(idx) {
+            if (idx >= levels.length) {
+                showMessage("🎉 ยินดีด้วย! คุณผ่านทุกด่านและกลายเป็นสุดยอดนักเขียนโค้ดแล้ว", "bg-stem-success");
+                return;
+            }
+            currentLevel = idx;
+            const lvl = levels[currentLevel];
+            document.getElementById('level-title').textContent = lvl.title;
+            document.getElementById('level-display').textContent = currentLevel + 1;
+            
+            updateChapterButtons(idx);
+            
+            // Initialize Grid & Robot
+            drawGrid(lvl.gridSize);
+            
+            // Reset state
+            robot.x = lvl.start.x;
+            robot.y = lvl.start.y;
+            robot.dir = lvl.start.dir;
+            robot.rotDeg = lvl.start.dir * 90;
+            currentGrid = JSON.parse(JSON.stringify(lvl)); // Deep copy map items
+            
+            clearWorkspace();
+            renderBoard();
+            updateRobotTransform();
+            
+            document.getElementById('btn-next').classList.add('hidden');
+            document.getElementById('btn-run').classList.remove('hidden');
+        }
+
+        function renderBoard() {
+            // Clear items
+            document.querySelectorAll('.grid-item').forEach(el => el.remove());
+            const lvl = currentGrid;
+            
+            // Render Target (Flag)
+            const targetCell = document.getElementById(`cell-${lvl.target.x}-${lvl.target.y}`);
+            if(targetCell) {
+                targetCell.innerHTML += `<div class="grid-item text-xl md:text-3xl animate-pulse"><i class="fa-solid fa-flag-checkered text-stem-success"></i></div>`;
+            }
+
+            // Render Obstacles
+            lvl.obstacles.forEach(obs => {
+                const c = document.getElementById(`cell-${obs.x}-${obs.y}`);
+                if(c) {
+                    c.innerHTML += `<div class="grid-item w-4/5 h-4/5 bg-red-500 rounded-sm border-2 md:border-4 border-red-700 flex items-center justify-center shadow-lg"><i class="fa-solid fa-xmark text-red-200 text-xs md:text-base"></i></div>`;
+                }
+            });
+
+            // Render Coins
+            lvl.coins.forEach(coin => {
+                const c = document.getElementById(`cell-${coin.x}-${coin.y}`);
+                if(c) {
+                    c.innerHTML += `<div class="grid-item coin-anim text-yellow-400 text-lg md:text-2xl drop-shadow-[0_0_5px_rgba(250,204,21,0.8)]"><i class="fa-solid fa-coins"></i></div>`;
+                }
+            });
+        }
+
+        function updateRobotTransform() {
+            // Translate is relative to the robot's size, meaning 100% represents exactly one grid cell.
+            robotEl.style.transform = `translate(${robot.x * 100}%, ${robot.y * 100}%) rotate(${robot.rotDeg}deg)`;
+        }
+
+        // --- CHAPTER NAVIGATION ---
+        function gotoChapter(ch) {
+            if (isRunning) return;
+            if (ch === 1) loadLevel(0);
+            else if (ch === 2) loadLevel(5);
+            else if (ch === 3) loadLevel(10);
+            else if (ch === 4) loadLevel(15);
+        }
+
+        function updateChapterButtons(idx) {
+            const btn1 = document.getElementById('btn-ch1');
+            const btn2 = document.getElementById('btn-ch2');
+            const btn3 = document.getElementById('btn-ch3');
+            const btn4 = document.getElementById('btn-ch4');
+            
+            if(!btn1 || !btn2 || !btn3 || !btn4) return;
+
+            // Reset all buttons to gray
+            [btn1, btn2, btn3, btn4].forEach(btn => {
+                btn.classList.remove('bg-stem-primary', 'bg-stem-secondary', 'bg-stem-accent', 'bg-stem-danger');
+                btn.classList.add('bg-slate-600');
+            });
+
+            // Highlight active chapter button
+            if (idx >= 0 && idx <= 4) btn1.classList.replace('bg-slate-600', 'bg-stem-primary');
+            else if (idx >= 5 && idx <= 9) btn2.classList.replace('bg-slate-600', 'bg-stem-secondary');
+            else if (idx >= 10 && idx <= 14) btn3.classList.replace('bg-slate-600', 'bg-stem-accent');
+            else if (idx >= 15 && idx <= 19) btn4.classList.replace('bg-slate-600', 'bg-stem-danger');
+        }
+
+        // --- BLOCKLY (WORKSPACE) LOGIC ---
+        function getBlockDetails(type) {
+            const map = {
+                'forward': { color: 'bg-blue-500', text: 'เดินหน้า', icon: 'fa-arrow-up' },
+                'backward': { color: 'bg-indigo-500', text: 'ถอยหลัง', icon: 'fa-arrow-down' },
+                'left': { color: 'bg-purple-500', text: 'เลี้ยวซ้าย', icon: 'fa-rotate-left' },
+                'right': { color: 'bg-pink-500', text: 'เลี้ยวขวา', icon: 'fa-rotate-right' },
+                'pick': { color: 'bg-emerald-500', text: 'คีบวัตถุ', icon: 'fa-hand-paper' },
+                'drop': { color: 'bg-yellow-500', text: 'ปล่อยวัตถุ', icon: 'fa-hand-back-fist' },
+                'random': { color: 'bg-cyan-500', text: 'สุ่มทำงาน', icon: 'fa-shuffle' },
+                'loop': { color: 'bg-orange-500', text: 'ทำซ้ำ 2 รอบ', icon: 'fa-repeat' }
+            };
+            return map[type];
+        }
+
+        function addBlock(type) {
+            if (isRunning) return;
+            initAudio(); // Initialize audio context on user interaction
+            const id = 'cmd_' + Date.now();
+            commandsList.push({ type, id });
+            
+            const b = getBlockDetails(type);
+            const el = document.createElement('div');
+            el.id = id;
+            
+            // เช็คว่าถ้าเป็นปุ่มสีเหลือง (ปล่อย) ให้ข้อความเป็นสีเข้ม
+            const textColorClass = type === 'drop' ? 'text-slate-900' : 'text-white';
+            const closeBtnClass = type === 'drop' ? 'text-slate-900/60 hover:text-slate-900' : 'text-white/50 hover:text-white';
+            
+            // ทำให้ขนาดบล็อกใน workspace เล็กลง (px-3 py-1.5)
+            el.className = `${b.color} ${textColorClass} px-3 py-1.5 rounded shadow flex items-center justify-between cursor-pointer transform hover:scale-[1.02] transition-transform text-xs md:text-sm`;
+            el.innerHTML = `
+                <div class="flex items-center gap-2"><i class="fa-solid ${b.icon}"></i> <span class="font-bold">${b.text}</span></div>
+                <i class="fa-solid fa-xmark ${closeBtnClass}" onclick="removeBlock(event, '${id}')"></i>
+            `;
+            workspaceEl.appendChild(el);
+            emptyMsgEl.style.display = 'none';
+            
+            // Scroll to bottom
+            setTimeout(() => {
+                workspaceEl.scrollTop = workspaceEl.scrollHeight;
+            }, 50);
+        }
+
+        function removeBlock(event, id) {
+            if (isRunning) return;
+            event.stopPropagation();
+            commandsList = commandsList.filter(c => c.id !== id);
+            document.getElementById(id).remove();
+            if (commandsList.length === 0) emptyMsgEl.style.display = 'block';
+        }
+
+        function clearWorkspace() {
+            commandsList = [];
+            Array.from(workspaceEl.children).forEach(c => {
+                if(c.id !== 'workspace-empty') c.remove();
+            });
+            emptyMsgEl.style.display = 'block';
+        }
+
+        // --- EXECUTION LOGIC ---
+        function updateScore(points) {
+            score += points;
+            document.getElementById('score-display').textContent = score;
+        }
+        function updateCoins() {
+            coins++;
+            document.getElementById('coin-display').textContent = coins;
+            updateScore(50);
+            soundCoin();
+        }
+
+        function showMessage(msg, bgClass="bg-red-500") {
+            const box = document.getElementById('msg-box');
+            document.getElementById('msg-text').textContent = msg;
+            box.className = `fixed top-5 left-1/2 transform -translate-x-1/2 text-white px-6 py-3 rounded-full shadow-lg font-bold transition-opacity duration-300 z-50 flex items-center gap-2 ${bgClass} text-sm md:text-base`;
+            box.style.opacity = '1';
+            setTimeout(() => box.style.opacity = '0', 2500);
+        }
+
+        const delay = ms => new Promise(res => setTimeout(res, ms));
+
+        async function runCommands() {
+            if (isRunning || commandsList.length === 0) return;
+            isRunning = true;
+            document.getElementById('btn-run').classList.add('opacity-50', 'cursor-not-allowed');
+
+            // Flatten commands (handle Loop)
+            let executable = [];
+            for (let i = 0; i < commandsList.length; i++) {
+                if (commandsList[i].type === 'loop') {
+                    if (executable.length > 0) {
+                        // Repeat the previous command one more time (making it 2x total)
+                        executable.push(executable[executable.length - 1]);
+                    }
+                } else {
+                    executable.push(commandsList[i]);
+                }
+            }
+
+            // Restore starting state before running
+            const lvl = levels[currentLevel];
+            robot.x = lvl.start.x; robot.y = lvl.start.y; 
+            robot.dir = lvl.start.dir; robot.rotDeg = lvl.start.dir * 90;
+            currentGrid = JSON.parse(JSON.stringify(lvl));
+            renderBoard();
+            updateRobotTransform();
+            await delay(300);
+
+            let crashed = false;
+            let won = false;
+
+            for (let cmd of executable) {
+                if (crashed || won) break;
+                soundStep();
+                
+                // Highlight block (visual cue)
+                const domEl = document.getElementById(cmd.id);
+                if(domEl) {
+                    domEl.classList.add('ring-2', 'ring-white', 'scale-105');
+                    // เลื่อนให้เห็นบล็อกที่กำลังรัน
+                    domEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+                    await delay(150);
+                }
+
+                // Process Action
+                let dx = [0, 1, 0, -1]; // N, E, S, W
+                let dy = [-1, 0, 1, 0];
+                
+                if (cmd.type === 'forward') {
+                    robot.x += dx[robot.dir];
+                    robot.y += dy[robot.dir];
+                } else if (cmd.type === 'backward') {
+                    robot.x -= dx[robot.dir];
+                    robot.y -= dy[robot.dir];
+                } else if (cmd.type === 'left') {
+                    robot.dir = (robot.dir + 3) % 4;
+                    robot.rotDeg -= 90;
+                } else if (cmd.type === 'right') {
+                    robot.dir = (robot.dir + 1) % 4;
+                    robot.rotDeg += 90;
+                } else if (cmd.type === 'pick') {
+                    // แอนิเมชันสำหรับคีบ รอ 200ms
+                    await delay(200);
+                } else if (cmd.type === 'drop') {
+                    // แอนิเมชันสำหรับปล่อย รอ 200ms
+                    await delay(200);
+                } else if (cmd.type === 'random') {
+                    // สุ่มการกระทำ 1 อย่าง (เดินหน้า, ถอยหลัง, เลี้ยวซ้าย, เลี้ยวขวา)
+                    let randAction = Math.floor(Math.random() * 4);
+                    if (randAction === 0) { robot.x += dx[robot.dir]; robot.y += dy[robot.dir]; }
+                    else if (randAction === 1) { robot.x -= dx[robot.dir]; robot.y -= dy[robot.dir]; }
+                    else if (randAction === 2) { robot.dir = (robot.dir + 3) % 4; robot.rotDeg -= 90; }
+                    else if (randAction === 3) { robot.dir = (robot.dir + 1) % 4; robot.rotDeg += 90; }
+                }
+
+                updateRobotTransform();
+                await delay(300); // Wait for CSS transition
+
+                if(domEl) domEl.classList.remove('ring-2', 'ring-white', 'scale-105');
+
+                // Check Collisions dynamically based on currentGridSize
+                if (robot.x < 0 || robot.x >= currentGridSize || robot.y < 0 || robot.y >= currentGridSize) {
+                    crashed = true;
+                    soundCrash();
+                    updateScore(-20);
+                    showMessage("ชนขอบสนาม! -20 คะแนน");
+                    break;
+                }
+
+                if (currentGrid.obstacles.some(o => o.x === robot.x && o.y === robot.y)) {
+                    crashed = true;
+                    soundCrash();
+                    updateScore(-20);
+                    showMessage("ชนสิ่งกีดขวาง! -20 คะแนน");
+                    break;
+                }
+
+                // Check Coin Collection
+                const coinIdx = currentGrid.coins.findIndex(c => c.x === robot.x && c.y === robot.y);
+                if (coinIdx > -1) {
+                    currentGrid.coins.splice(coinIdx, 1); // remove coin
+                    updateCoins();
+                    renderBoard(); // re-render to remove coin visual
+                }
+
+                // Check Win
+                if (robot.x === currentGrid.target.x && robot.y === currentGrid.target.y) {
+                    won = true;
+                }
+            }
+
+            if (won) {
+                soundWin();
+                updateScore(100);
+                document.getElementById('modal-success').classList.remove('hidden');
+                document.getElementById('modal-content').classList.remove('scale-90');
+                document.getElementById('btn-run').classList.add('hidden');
+                document.getElementById('btn-next').classList.remove('hidden');
+            } else if (!crashed) {
+                showMessage("ยังไม่ถึงเป้าหมาย ลองแก้คำสั่งใหม่นะ!", "bg-orange-500");
+            }
+
+            isRunning = false;
+            document.getElementById('btn-run').classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+
+        // --- UI BINDINGS ---
+        document.getElementById('btn-run').addEventListener('click', runCommands);
+        document.getElementById('btn-reset').addEventListener('click', () => {
+            if(isRunning) return;
+            loadLevel(currentLevel); // Reload current level
+        });
+        document.getElementById('btn-next').addEventListener('click', () => {
+            loadLevel(currentLevel + 1);
+        });
+
+        function closeModal() {
+            document.getElementById('modal-success').classList.add('hidden');
+            loadLevel(currentLevel + 1);
+        }
+
+        // --- AI ASSISTANT (Gemini API) ---
+        async function fetchGeminiAPI(message, retryCount = 0) {
+            const maxRetries = 5;
+            const delays = [1000, 2000, 4000, 8000, 16000];
+            
+            const payload = {
+                contents: [{ parts: [{ text: message }] }],
+                systemInstruction: { parts: [{ text: "คุณคือ 'เจ้าด็อกเตอร์' ผู้ช่วย AI สอนเด็กไทยอายุ 7-15 ปีเขียนโค้ด อธิบายคอนเซปต์โปรแกรมมิ่ง (เช่น loop, if, บล็อกคำสั่ง) ให้เข้าใจง่ายๆ สั้นๆ ไม่เกิน 3-4 ประโยค ใช้คำเปรียบเทียบในชีวิตประจำวัน และใส่อีโมจิน่ารักๆ สนับสนุนเด็กๆ" }] }
+            };
+
+            try {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
+                
+                const data = await res.json();
+                if (data.candidates && data.candidates[0].content.parts[0].text) {
+                    return data.candidates[0].content.parts[0].text;
+                } else {
+                    throw new Error("Invalid format");
+                }
+            } catch (error) {
+                if (retryCount < maxRetries) {
+                    await delay(delays[retryCount]);
+                    return fetchGeminiAPI(message, retryCount + 1);
+                }
+                console.error("AI Error:", error);
+                return "อูยยยย ระบบด็อกเตอร์ขัดข้องนิดหน่อย ลองถามใหม่นะคร้าบ 🤖🔧";
+            }
+        }
+
+        function addChatMessage(text, isUser = false) {
+            const div = document.createElement('div');
+            div.className = `flex gap-2 ${isUser ? 'justify-end' : ''}`;
+            
+            const bubble = document.createElement('div');
+            bubble.className = isUser 
+                ? 'bg-stem-primary text-white p-2 rounded-lg rounded-tr-none max-w-[85%] border border-blue-500'
+                : 'bg-stem-secondary/20 text-white p-2 rounded-lg rounded-tl-none border border-stem-secondary/50 max-w-[85%]';
+            
+            // Allow basic markdown parsing for bold
+            bubble.innerHTML = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            
+            div.appendChild(bubble);
+            chatHistory.appendChild(div);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+        }
+
+        async function handleAISubmit() {
+            const text = aiInput.value.trim();
+            if(!text) return;
+            
+            addChatMessage(text, true);
+            aiInput.value = '';
+            aiInput.disabled = true;
+            
+            // Show typing indicator
+            const typingId = 'typing-' + Date.now();
+            const typingDiv = document.createElement('div');
+            typingDiv.id = typingId;
+            typingDiv.className = 'flex gap-2';
+            typingDiv.innerHTML = `<div class="bg-stem-secondary/20 text-white p-2 rounded-lg rounded-tl-none border border-stem-secondary/50 text-xs italic">ด็อกเตอร์กำลังพิมพ์...</div>`;
+            chatHistory.appendChild(typingDiv);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+
+            // Fetch API
+            const response = await fetchGeminiAPI(text);
+            
+            // Remove typing indicator & Add response
+            document.getElementById(typingId).remove();
+            addChatMessage(response, false);
+            aiInput.disabled = false;
+            aiInput.focus();
+        }
+
+        document.getElementById('btn-send-ai').addEventListener('click', handleAISubmit);
+        aiInput.addEventListener('keypress', (e) => {
+            if(e.key === 'Enter') handleAISubmit();
+        });
+
+        // Initialize App
+        window.onload = () => {
+            loadLevel(0);
+        };
+
+    </script>
+</body>
+</html>
