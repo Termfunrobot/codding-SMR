@@ -113,7 +113,9 @@
         <button id="btn-ch3" onclick="gotoChapter(3)" class="px-3 py-1.5 rounded-full bg-red-100 text-red-800 hover:bg-red-200 text-xs md:text-sm font-bold shadow transition-all hover:scale-105">บทที่ 3 (11-15)</button>
         <button id="btn-ch4" onclick="gotoChapter(4)" class="px-3 py-1.5 rounded-full bg-red-100 text-red-800 hover:bg-red-200 text-xs md:text-sm font-bold shadow transition-all hover:scale-105">บทที่ 4 (16-20)</button>
         <button id="btn-ch5" onclick="gotoChapter(5)" class="px-3 py-1.5 rounded-full bg-red-100 text-red-800 hover:bg-red-200 text-xs md:text-sm font-bold shadow transition-all hover:scale-105">บทที่ 5 (21-25)</button>
-        <button id="btn-ch6" onclick="gotoChapter(6)" class="px-3 py-1.5 rounded-full bg-red-100 text-red-800 hover:bg-red-200 text-xs md:text-sm font-bold shadow transition-all hover:scale-105">บทที่ 6 (26-30) 🎯🎨</button>
+        <button id="btn-ch6" onclick="gotoChapter(6)" class="px-3 py-1.5 rounded-full bg-red-100 text-red-800 hover:bg-red-200 text-xs md:text-sm font-bold shadow transition-all hover:scale-105">บทที่ 6 (26-30)</button>
+        <button id="btn-ch7" onclick="gotoChapter(7)" class="px-3 py-1.5 rounded-full bg-red-100 text-red-800 hover:bg-red-200 text-xs md:text-sm font-bold shadow transition-all hover:scale-105">บทที่ 7 (31-35) 🔴🔵🟡</button>
+        <button id="btn-ch8" onclick="gotoChapter(8)" class="px-3 py-1.5 rounded-full bg-red-100 text-red-800 hover:bg-red-200 text-xs md:text-sm font-bold shadow transition-all hover:scale-105">บทที่ 8 (36-40) 👑</button>
     </div>
 
     <!-- Main Content -->
@@ -226,19 +228,19 @@
                     <div class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center border border-red-300">
                         <i class="fa-solid fa-robot text-red-500"></i>
                     </div>
-                    <h3 class="font-bold text-slate-800 text-sm md:text-base">ผู้ช่วย AI: ด็อกเตอร์เรด (Dr. Red)</h3>
+                    <h3 class="font-bold text-slate-800 text-sm md:text-base">ผู้ช่วย AI</h3>
                 </div>
                 
                 <div id="chat-history" class="flex-1 bg-slate-50 rounded-lg p-3 overflow-y-auto flex flex-col gap-3 text-sm border border-slate-100 shadow-inner">
                     <div class="flex gap-2">
                         <div class="bg-white text-slate-700 p-2 rounded-lg rounded-tl-none border border-red-200 max-w-[85%] text-xs md:text-sm shadow-sm">
-                            สวัสดีครับ! ด่านนี้มีการปรับกำแพงใหม่ ลองดูทางหนีทีไล่ให้ดีก่อนเขียนโค้ดล่ะ 🤖✨
+                            สวัสดีครับ! ด่านใหม่รออยู่ ลองดูทางหนีทีไล่ให้ดีก่อนเขียนโค้ดล่ะ 🤖✨
                         </div>
                     </div>
                 </div>
                 
                 <div class="mt-2 flex gap-2">
-                    <input type="text" id="ai-input" placeholder="ถามด็อกเตอร์ เช่น ใช้วิธีแยกสียังไง?" class="flex-1 bg-slate-100 text-slate-800 px-3 py-2 rounded-lg outline-none focus:ring-2 focus:ring-stem-primary transition-all text-xs md:text-sm border border-slate-200">
+                    <input type="text" id="ai-input" placeholder="ถามผู้ช่วย AI เช่น ใช้วิธีแยกสียังไง?" class="flex-1 bg-slate-100 text-slate-800 px-3 py-2 rounded-lg outline-none focus:ring-2 focus:ring-stem-primary transition-all text-xs md:text-sm border border-slate-200">
                     <button id="btn-send-ai" class="bg-stem-primary hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-all shadow-md">
                         <i class="fa-solid fa-paper-plane"></i>
                     </button>
@@ -349,7 +351,6 @@
                 gridSize: 10, 
                 start: { x: 0, y: 0, dir: 2 }, 
                 target: { x: 9, y: 0 }, 
-                // แก้ไขกำแพงด่านที่ 25 ย้ายจากตำแหน่ง 5,8 และ 6,8 ไปยัง 8,2 และ 9,2 ตามภาพ
                 obstacles: [{x:3,y:2},{x:4,y:2},{x:5,y:2},{x:6,y:2},{x:7,y:2},{x:8,y:2},{x:9,y:2},{x:2,y:3},{x:2,y:4},{x:2,y:5},{x:2,y:6},{x:2,y:7}, {x:7,y:3},{x:7,y:4},{x:7,y:5},{x:7,y:6},{x:7,y:7}, {x:2,y:8},{x:3,y:8},{x:4,y:8}], 
                 coins: [{x: 4, y: 4}], 
                 dropZones: [{x: 9, y: 0, color: 'blue'}] 
@@ -405,6 +406,190 @@
                 coins: [], 
                 dropZones: [{x: 1, y: 8, color: 'blue'}, {x: 8, y: 1, color: 'red'}], 
                 predefinedCans: [{x: 5, y: 2, color: 'blue'}, {x: 5, y: 8, color: 'red'}] 
+            },
+
+            // === บทที่ 7 (ด่าน 31-35) : ภารกิจแยก 6 กระป๋อง 3 สี ===
+            { 
+                title: "ด่านที่ 31 (บทที่ 7): คัดแยกสี 3 ระดับขั้นต้น", 
+                gridSize: 10, 
+                start: { x: 0, y: 9, dir: 0 }, 
+                target: { x: 9, y: 0 }, 
+                obstacles: [{x:4,y:4},{x:4,y:5},{x:5,y:4},{x:5,y:5}], 
+                coins: [{x: 4, y: 2}], 
+                dropZones: [
+                    {x: 8, y: 8, color: 'red'}, {x: 9, y: 8, color: 'red'}, 
+                    {x: 0, y: 1, color: 'blue'}, {x: 1, y: 1, color: 'blue'}, 
+                    {x: 8, y: 1, color: 'amber'}, {x: 9, y: 1, color: 'amber'}
+                ], 
+                predefinedCans: [
+                    {x: 2, y: 7, color: 'red'}, {x: 3, y: 7, color: 'red'}, 
+                    {x: 2, y: 2, color: 'blue'}, {x: 3, y: 2, color: 'blue'}, 
+                    {x: 6, y: 5, color: 'amber'}, {x: 7, y: 5, color: 'amber'}
+                ] 
+            },
+            { 
+                title: "ด่านที่ 32 (บทที่ 7): วงเวียนสามสี", 
+                gridSize: 10, 
+                start: { x: 4, y: 4, dir: 1 }, 
+                target: { x: 0, y: 0 }, 
+                obstacles: [{x:2,y:2},{x:7,y:2},{x:2,y:7},{x:7,y:7}], 
+                coins: [], 
+                dropZones: [
+                    {x: 1, y: 2, color: 'red'}, {x: 3, y: 2, color: 'red'}, 
+                    {x: 6, y: 2, color: 'blue'}, {x: 8, y: 2, color: 'blue'}, 
+                    {x: 4, y: 8, color: 'amber'}, {x: 5, y: 8, color: 'amber'}
+                ], 
+                predefinedCans: [
+                    {x: 1, y: 4, color: 'red'}, {x: 2, y: 4, color: 'red'}, 
+                    {x: 7, y: 4, color: 'blue'}, {x: 8, y: 4, color: 'blue'}, 
+                    {x: 4, y: 2, color: 'amber'}, {x: 5, y: 2, color: 'amber'}
+                ] 
+            },
+            { 
+                title: "ด่านที่ 33 (บทที่ 7): ข้ามฟากหลบสิ่งกีดขวาง", 
+                gridSize: 10, 
+                start: { x: 0, y: 5, dir: 0 }, 
+                target: { x: 9, y: 5 }, 
+                obstacles: [{x:4,y:0},{x:4,y:1},{x:4,y:2},{x:4,y:7},{x:4,y:8},{x:4,y:9}], 
+                coins: [{x: 4, y: 5}], 
+                dropZones: [
+                    {x: 0, y: 1, color: 'red'}, {x: 0, y: 8, color: 'red'}, 
+                    {x: 9, y: 1, color: 'blue'}, {x: 9, y: 8, color: 'blue'}, 
+                    {x: 5, y: 0, color: 'amber'}, {x: 5, y: 9, color: 'amber'}
+                ], 
+                predefinedCans: [
+                    {x: 2, y: 3, color: 'red'}, {x: 2, y: 6, color: 'red'}, 
+                    {x: 6, y: 3, color: 'blue'}, {x: 6, y: 6, color: 'blue'}, 
+                    {x: 8, y: 3, color: 'amber'}, {x: 8, y: 6, color: 'amber'}
+                ] 
+            },
+            { 
+                title: "ด่านที่ 34 (บทที่ 7): ห้องเก็บของ 3 โซน", 
+                gridSize: 10, 
+                start: { x: 5, y: 5, dir: 0 }, 
+                target: { x: 5, y: 0 }, 
+                obstacles: [{x:3,y:3},{x:3,y:4},{x:3,y:5},{x:4,y:3},{x:5,y:3},{x:6,y:3},{x:7,y:3},{x:7,y:4},{x:7,y:5}], 
+                coins: [], 
+                dropZones: [
+                    {x: 1, y: 1, color: 'red'}, {x: 2, y: 1, color: 'red'}, 
+                    {x: 8, y: 1, color: 'blue'}, {x: 9, y: 1, color: 'blue'}, 
+                    {x: 1, y: 8, color: 'amber'}, {x: 2, y: 8, color: 'amber'}
+                ], 
+                predefinedCans: [
+                    {x: 4, y: 6, color: 'red'}, {x: 4, y: 7, color: 'red'}, 
+                    {x: 6, y: 6, color: 'blue'}, {x: 6, y: 7, color: 'blue'}, 
+                    {x: 5, y: 8, color: 'amber'}, {x: 5, y: 9, color: 'amber'}
+                ] 
+            },
+            { 
+                title: "ด่านที่ 35 (บทที่ 7): สวนสนุกสามสี", 
+                gridSize: 10, 
+                start: { x: 0, y: 0, dir: 2 }, 
+                target: { x: 9, y: 9 }, 
+                obstacles: [{x:2,y:5},{x:3,y:5},{x:4,y:5},{x:5,y:5},{x:6,y:5},{x:7,y:5}], 
+                coins: [{x: 0, y: 9}, {x: 9, y: 0}], 
+                dropZones: [
+                    {x: 4, y: 1, color: 'red'}, {x: 5, y: 1, color: 'red'}, 
+                    {x: 1, y: 4, color: 'blue'}, {x: 1, y: 5, color: 'blue'}, 
+                    {x: 8, y: 4, color: 'amber'}, {x: 8, y: 5, color: 'amber'}
+                ], 
+                predefinedCans: [
+                    {x: 2, y: 8, color: 'red'}, {x: 7, y: 8, color: 'red'}, 
+                    {x: 3, y: 2, color: 'blue'}, {x: 6, y: 2, color: 'blue'}, 
+                    {x: 2, y: 2, color: 'amber'}, {x: 7, y: 2, color: 'amber'}
+                ] 
+            },
+
+            // === บทที่ 8 (ด่าน 36-40) : ภารกิจมาสเตอร์ ===
+            { 
+                title: "ด่านที่ 36 (บทที่ 8): เขาวงกตนักแยกประเภทยอดเยี่ยม", 
+                gridSize: 10, 
+                start: { x: 0, y: 9, dir: 0 }, 
+                target: { x: 0, y: 0 }, 
+                obstacles: [{x:1,y:8},{x:2,y:8},{x:3,y:8},{x:5,y:8},{x:6,y:8},{x:7,y:8},{x:8,y:8},{x:1,y:6},{x:2,y:6},{x:3,y:6},{x:4,y:6},{x:5,y:6},{x:6,y:6},{x:8,y:6}], 
+                coins: [], 
+                dropZones: [
+                    {x: 0, y: 7, color: 'red'}, {x: 9, y: 7, color: 'red'}, 
+                    {x: 0, y: 5, color: 'blue'}, {x: 9, y: 5, color: 'blue'}, 
+                    {x: 4, y: 0, color: 'amber'}, {x: 5, y: 0, color: 'amber'}
+                ], 
+                predefinedCans: [
+                    {x: 4, y: 8, color: 'red'}, {x: 4, y: 7, color: 'red'}, 
+                    {x: 7, y: 6, color: 'blue'}, {x: 7, y: 5, color: 'blue'}, 
+                    {x: 2, y: 2, color: 'amber'}, {x: 7, y: 2, color: 'amber'}
+                ] 
+            },
+            { 
+                title: "ด่านที่ 37 (บทที่ 8): ลำเลียงตามสายพาน", 
+                gridSize: 10, 
+                start: { x: 0, y: 0, dir: 1 }, 
+                target: { x: 9, y: 9 }, 
+                obstacles: [{x:2,y:1},{x:2,y:2},{x:2,y:3},{x:4,y:6},{x:4,y:7},{x:4,y:8},{x:7,y:1},{x:7,y:2},{x:7,y:3}], 
+                coins: [{x: 4, y: 4}], 
+                dropZones: [
+                    {x: 0, y: 9, color: 'red'}, {x: 1, y: 9, color: 'red'}, 
+                    {x: 8, y: 0, color: 'blue'}, {x: 9, y: 0, color: 'blue'}, 
+                    {x: 4, y: 9, color: 'amber'}, {x: 5, y: 9, color: 'amber'}
+                ], 
+                predefinedCans: [
+                    {x: 1, y: 2, color: 'red'}, {x: 3, y: 2, color: 'red'}, 
+                    {x: 6, y: 2, color: 'blue'}, {x: 8, y: 2, color: 'blue'}, 
+                    {x: 3, y: 7, color: 'amber'}, {x: 5, y: 7, color: 'amber'}
+                ] 
+            },
+            { 
+                title: "ด่านที่ 38 (บทที่ 8): สลับตำแหน่ง", 
+                gridSize: 10, 
+                start: { x: 4, y: 9, dir: 0 }, 
+                target: { x: 4, y: 0 }, 
+                obstacles: [{x:1,y:4},{x:2,y:4},{x:3,y:4},{x:6,y:4},{x:7,y:4},{x:8,y:4}], 
+                coins: [], 
+                dropZones: [
+                    {x: 2, y: 8, color: 'red'}, {x: 7, y: 8, color: 'red'}, 
+                    {x: 2, y: 1, color: 'blue'}, {x: 7, y: 1, color: 'blue'}, 
+                    {x: 0, y: 4, color: 'amber'}, {x: 9, y: 4, color: 'amber'}
+                ], 
+                predefinedCans: [
+                    {x: 2, y: 2, color: 'red'}, {x: 7, y: 2, color: 'red'}, 
+                    {x: 2, y: 7, color: 'blue'}, {x: 7, y: 7, color: 'blue'}, 
+                    {x: 4, y: 3, color: 'amber'}, {x: 4, y: 6, color: 'amber'}
+                ] 
+            },
+            { 
+                title: "ด่านที่ 39 (บทที่ 8): แดนอันตราย", 
+                gridSize: 10, 
+                start: { x: 0, y: 4, dir: 1 }, 
+                target: { x: 9, y: 4 }, 
+                obstacles: [{x:3,y:2},{x:4,y:2},{x:5,y:2},{x:6,y:2},{x:3,y:6},{x:4,y:6},{x:5,y:6},{x:6,y:6}], 
+                coins: [{x: 4, y: 4}], 
+                dropZones: [
+                    {x: 4, y: 1, color: 'red'}, {x: 5, y: 1, color: 'red'}, 
+                    {x: 4, y: 7, color: 'blue'}, {x: 5, y: 7, color: 'blue'}, 
+                    {x: 1, y: 4, color: 'amber'}, {x: 8, y: 4, color: 'amber'}
+                ], 
+                predefinedCans: [
+                    {x: 2, y: 1, color: 'red'}, {x: 7, y: 1, color: 'red'}, 
+                    {x: 2, y: 7, color: 'blue'}, {x: 7, y: 7, color: 'blue'}, 
+                    {x: 4, y: 3, color: 'amber'}, {x: 5, y: 5, color: 'amber'}
+                ] 
+            },
+            { 
+                title: "ด่านที่ 40 (บทที่ 8): อัจฉริยะนักแยกกระป๋อง (ด่านสุดท้าย!)", 
+                gridSize: 10, 
+                start: { x: 4, y: 4, dir: 0 }, 
+                target: { x: 0, y: 0 }, 
+                obstacles: [{x:2,y:2},{x:2,y:3},{x:3,y:2},{x:6,y:2},{x:7,y:2},{x:7,y:3},{x:2,y:6},{x:2,y:7},{x:3,y:7},{x:6,y:7},{x:7,y:6},{x:7,y:7}], 
+                coins: [{x: 4, y: 2}, {x: 4, y: 6}, {x: 2, y: 4}, {x: 6, y: 4}], 
+                dropZones: [
+                    {x: 0, y: 9, color: 'red'}, {x: 1, y: 9, color: 'red'}, 
+                    {x: 8, y: 9, color: 'blue'}, {x: 9, y: 9, color: 'blue'}, 
+                    {x: 4, y: 0, color: 'amber'}, {x: 5, y: 0, color: 'amber'}
+                ], 
+                predefinedCans: [
+                    {x: 1, y: 1, color: 'red'}, {x: 3, y: 4, color: 'red'}, 
+                    {x: 8, y: 1, color: 'blue'}, {x: 6, y: 4, color: 'blue'}, 
+                    {x: 1, y: 8, color: 'amber'}, {x: 8, y: 8, color: 'amber'}
+                ] 
             }
         ];
 
@@ -575,9 +760,9 @@
                 lvl.cans.forEach(can => {
                     const c = document.getElementById(`cell-${can.x}-${can.y}`);
                     if(c) {
-                        let canBg = can.color === 'red' ? 'bg-red-500' : 'bg-blue-500';
-                        let canBorder = can.color === 'red' ? 'border-red-800' : 'border-blue-800';
-                        let shadow = can.color === 'red' ? 'shadow-[0_4px_10px_rgba(239,68,68,0.6)]' : 'shadow-[0_4px_10px_rgba(59,130,246,0.6)]';
+                        let canBg = can.color === 'red' ? 'bg-red-500' : (can.color === 'blue' ? 'bg-blue-500' : 'bg-amber-500');
+                        let canBorder = can.color === 'red' ? 'border-red-800' : (can.color === 'blue' ? 'border-blue-800' : 'border-amber-800');
+                        let shadow = can.color === 'red' ? 'shadow-[0_4px_10px_rgba(239,68,68,0.6)]' : (can.color === 'blue' ? 'shadow-[0_4px_10px_rgba(59,130,246,0.6)]' : 'shadow-[0_4px_10px_rgba(245,158,11,0.6)]');
                         c.innerHTML += `<div class="grid-item flex items-center justify-center animate-pulse"><div class="w-5 h-8 md:w-6 md:h-10 ${canBg} border-2 ${canBorder} rounded-sm ${shadow} flex items-center justify-center"><i class="fa-solid fa-database text-[10px] md:text-[12px] text-white opacity-50"></i></div></div>`;
                     }
                 });
@@ -597,6 +782,8 @@
             else if (ch === 4) loadLevel(15);
             else if (ch === 5) loadLevel(20);
             else if (ch === 6) loadLevel(25);
+            else if (ch === 7) loadLevel(30);
+            else if (ch === 8) loadLevel(35);
         }
 
         function updateChapterButtons(idx) {
@@ -606,19 +793,22 @@
                 document.getElementById('btn-ch3'), 
                 document.getElementById('btn-ch4'),
                 document.getElementById('btn-ch5'),
-                document.getElementById('btn-ch6')
+                document.getElementById('btn-ch6'),
+                document.getElementById('btn-ch7'),
+                document.getElementById('btn-ch8')
             ];
-            if(!btns[0]) return;
             btns.forEach(btn => { 
                 if(btn) btn.className = "px-3 py-1.5 rounded-full bg-red-100 text-red-800 hover:bg-red-200 text-xs md:text-sm font-bold shadow transition-all hover:scale-105"; 
             });
             const activeClass = "px-3 py-1.5 rounded-full bg-stem-primary text-white text-xs md:text-sm font-bold shadow transition-all hover:scale-105";
-            if (idx >= 0 && idx <= 4) btns[0].className = activeClass;
-            else if (idx >= 5 && idx <= 9) btns[1].className = activeClass;
-            else if (idx >= 10 && idx <= 14) btns[2].className = activeClass;
-            else if (idx >= 15 && idx <= 19) btns[3].className = activeClass;
-            else if (idx >= 20 && idx <= 24) btns[4].className = activeClass;
-            else if (idx >= 25 && idx <= 29) btns[5].className = activeClass;
+            if (idx >= 0 && idx <= 4 && btns[0]) btns[0].className = activeClass;
+            else if (idx >= 5 && idx <= 9 && btns[1]) btns[1].className = activeClass;
+            else if (idx >= 10 && idx <= 14 && btns[2]) btns[2].className = activeClass;
+            else if (idx >= 15 && idx <= 19 && btns[3]) btns[3].className = activeClass;
+            else if (idx >= 20 && idx <= 24 && btns[4]) btns[4].className = activeClass;
+            else if (idx >= 25 && idx <= 29 && btns[5]) btns[5].className = activeClass;
+            else if (idx >= 30 && idx <= 34 && btns[6]) btns[6].className = activeClass;
+            else if (idx >= 35 && idx <= 39 && btns[7]) btns[7].className = activeClass;
         }
 
         // --- BLOCKLY LOGIC & DRAG AND DROP ---
@@ -762,13 +952,16 @@
                             robot.canColor = pickedCan.color || 'blue';
                             
                             const rCan = document.getElementById('robot-can');
-                            rCan.setAttribute('fill', robot.canColor === 'red' ? '#ef4444' : '#3b82f6');
-                            rCan.setAttribute('stroke', robot.canColor === 'red' ? '#991b1b' : '#1e3a8a');
+                            rCan.setAttribute('fill', robot.canColor === 'red' ? '#ef4444' : (robot.canColor === 'blue' ? '#3b82f6' : '#f59e0b'));
+                            rCan.setAttribute('stroke', robot.canColor === 'red' ? '#991b1b' : (robot.canColor === 'blue' ? '#1e3a8a' : '#b45309'));
                             rCan.classList.remove('hidden');
                             
                             renderBoard();
                             soundCoin();
-                            showMessage(`คีบกระป๋อง${robot.canColor === 'red'?'สีแดง':'สีฟ้า'}!`, robot.canColor === 'red'?'bg-red-500':'bg-blue-500');
+                            
+                            let thColorName = robot.canColor === 'red' ? 'สีแดง' : (robot.canColor === 'blue' ? 'สีฟ้า' : 'สีเหลือง');
+                            let thColorBg = robot.canColor === 'red' ? 'bg-red-500' : (robot.canColor === 'blue' ? 'bg-blue-500' : 'bg-amber-500');
+                            showMessage(`คีบกระป๋อง${thColorName}!`, thColorBg);
                         } else {
                             showMessage("ไม่มีกระป๋องให้คีบตรงนี้!", "bg-orange-500");
                         }
@@ -887,7 +1080,7 @@
             const delays = [1000, 2000, 4000, 8000, 16000];
             const payload = {
                 contents: [{ parts: [{ text: message }] }],
-                systemInstruction: { parts: [{ text: "คุณคือ 'ด็อกเตอร์เรด' ผู้ช่วย AI สอนเด็กไทยอายุ 7-15 ปีเขียนโค้ด อธิบายให้เข้าใจง่ายๆ สนับสนุนเด็กๆ ใช้โทนใจดี" }] }
+                systemInstruction: { parts: [{ text: "คุณคือผู้ช่วย AI สอนเด็กไทยอายุ 7-15 ปีเขียนโค้ด อธิบายให้เข้าใจง่ายๆ สนับสนุนเด็กๆ ใช้โทนใจดี" }] }
             };
 
             try {
@@ -905,7 +1098,7 @@
                     await delay(delays[retryCount]);
                     return fetchGeminiAPI(message, retryCount + 1);
                 }
-                return "อูยยยย ระบบด็อกเตอร์เรดขัดข้องนิดหน่อย ลองถามใหม่นะคร้าบ 🤖🔧";
+                return "อูยยยย ระบบขัดข้องนิดหน่อย ลองถามใหม่นะคร้าบ 🤖🔧";
             }
         }
 
@@ -929,7 +1122,7 @@
             const typingId = 'typing-' + Date.now();
             const typingDiv = document.createElement('div');
             typingDiv.id = typingId; typingDiv.className = 'flex gap-2';
-            typingDiv.innerHTML = `<div class="bg-white text-slate-500 p-2 rounded-lg rounded-tl-none border border-red-200 text-xs italic shadow-sm">ด็อกเตอร์กำลังพิมพ์...</div>`;
+            typingDiv.innerHTML = `<div class="bg-white text-slate-500 p-2 rounded-lg rounded-tl-none border border-red-200 text-xs italic shadow-sm">กำลังพิมพ์...</div>`;
             chatHistory.appendChild(typingDiv);
             chatHistory.scrollTop = chatHistory.scrollHeight;
 
