@@ -82,6 +82,35 @@
 </head>
 <body class="h-screen flex flex-col font-sans">
 
+    <!-- Home Screen Overlay -->
+    <div id="home-screen" class="fixed inset-0 bg-stem-bg z-[100] flex flex-col items-center justify-center p-4">
+        <div class="bg-white p-8 rounded-3xl shadow-xl text-center max-w-md w-full border-4 border-red-200">
+            <i class="fa-solid fa-robot text-stem-primary text-6xl mb-4"></i>
+            <h1 class="text-3xl font-bold text-slate-800 mb-6">SMR Coding Challenge</h1>
+            
+            <div id="role-selection" class="flex flex-col gap-4">
+                <h2 class="text-lg text-slate-600 mb-2 font-semibold">เลือกสถานะผู้เล่น</h2>
+                <button onclick="selectRole('teacher')" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-all text-lg w-full flex items-center justify-center">
+                    <i class="fa-solid fa-chalkboard-user mr-2"></i> คุณครู
+                </button>
+                <button onclick="selectRole('student')" class="bg-stem-success hover:bg-emerald-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-all text-lg w-full flex items-center justify-center">
+                    <i class="fa-solid fa-user-graduate mr-2"></i> นักเรียน
+                </button>
+            </div>
+
+            <div id="student-form" class="hidden flex-col items-center gap-4 mt-2">
+                <h2 class="text-lg text-slate-600 font-semibold">กรอกชื่อนักเรียน</h2>
+                <input type="text" id="student-name-input" placeholder="ชื่อ-นามสกุล หรือชื่อเล่น" class="w-full bg-slate-100 text-slate-800 px-4 py-3 rounded-xl outline-none focus:ring-2 focus:ring-stem-primary transition-all text-base border border-slate-200 text-center">
+                <button onclick="startStudentMode()" class="bg-stem-primary hover:bg-red-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-all text-lg w-full mt-2 flex items-center justify-center">
+                    เริ่มจับเวลาและเข้าสู่เกม <i class="fa-solid fa-play ml-2"></i>
+                </button>
+                <button onclick="backToRoleSelection()" class="text-slate-500 hover:text-slate-700 text-sm mt-2 underline">
+                    กลับไปเลือกสถานะ
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Header -->
     <header class="bg-white shadow-md p-4 flex flex-col sm:flex-row justify-between items-center gap-2 z-20 border-b-2 border-red-200">
         <div class="flex items-center gap-3">
@@ -90,7 +119,15 @@
                 SMR Coding Challenge
             </h1>
         </div>
-        <div class="flex gap-4 bg-red-50 p-2 rounded-lg border border-red-200 shadow-sm">
+        <div class="flex gap-4 bg-red-50 p-2 rounded-lg border border-red-200 shadow-sm flex-wrap justify-center">
+            <div class="flex flex-col items-center px-2 border-r border-red-200">
+                <span class="text-xs text-slate-500 font-semibold">ผู้เล่น</span>
+                <span id="player-name-display" class="font-bold text-blue-600 text-lg">-</span>
+            </div>
+            <div class="flex flex-col items-center px-2 border-r border-red-200">
+                <span class="text-xs text-slate-500 font-semibold">เวลา</span>
+                <span id="timer-display" class="font-bold text-slate-700 text-lg">00:00</span>
+            </div>
             <div class="flex flex-col items-center px-2 border-r border-red-200">
                 <span class="text-xs text-slate-500 font-semibold">คะแนน</span>
                 <span id="score-display" class="font-bold text-stem-primary text-lg">0</span>
@@ -279,6 +316,63 @@
         let isRunning = false;
         
         let robot = { x: 0, y: 0, dir: 0, rotDeg: 0, hasCan: false, canColor: null }; 
+        
+        // --- ระบบผู้เล่น & จับเวลา ---
+        let isStudentMode = false;
+        let studentName = "";
+        let timerInterval = null;
+        let secondsElapsed = 0;
+
+        function selectRole(role) {
+            if (role === 'teacher') {
+                isStudentMode = false;
+                document.getElementById('player-name-display').textContent = 'คุณครู';
+                document.getElementById('btn-skip').style.display = 'flex'; // แสดงปุ่มข้ามด่าน
+                startGame();
+            } else {
+                document.getElementById('role-selection').classList.add('hidden');
+                document.getElementById('role-selection').classList.remove('flex');
+                document.getElementById('student-form').classList.remove('hidden');
+                document.getElementById('student-form').classList.add('flex');
+            }
+        }
+
+        function backToRoleSelection() {
+            document.getElementById('student-form').classList.add('hidden');
+            document.getElementById('student-form').classList.remove('flex');
+            document.getElementById('role-selection').classList.remove('hidden');
+            document.getElementById('role-selection').classList.add('flex');
+        }
+
+        function startStudentMode() {
+            const nameInput = document.getElementById('student-name-input').value.trim();
+            if (!nameInput) {
+                showMessage("กรุณากรอกชื่อก่อนเริ่มเกมครับ!", "bg-orange-500");
+                return;
+            }
+            isStudentMode = true;
+            studentName = nameInput;
+            document.getElementById('player-name-display').textContent = studentName;
+            document.getElementById('btn-skip').style.display = 'none'; // เอาปุ่มข้ามด่านออก
+            startGame();
+        }
+
+        function startGame() {
+            document.getElementById('home-screen').classList.add('hidden');
+            loadLevel(0);
+            startTimer();
+        }
+
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            secondsElapsed = 0;
+            timerInterval = setInterval(() => {
+                secondsElapsed++;
+                const m = String(Math.floor(secondsElapsed / 60)).padStart(2, '0');
+                const s = String(secondsElapsed % 60).padStart(2, '0');
+                document.getElementById('timer-display').textContent = `${m}:${s}`;
+            }, 1000);
+        }
 
         const levels = [
             // === บทที่ 1 (ด่าน 1-5) ===
@@ -1134,8 +1228,7 @@
 
         document.getElementById('btn-send-ai').addEventListener('click', handleAISubmit);
         aiInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') handleAISubmit(); });
-
-        window.onload = () => { loadLevel(0); };
+        
     </script>
 </body>
 </html>
