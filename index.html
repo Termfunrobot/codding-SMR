@@ -32,14 +32,14 @@
         }
     </script>
     <style>
-        /* เพิ่มพื้นหลังแบบไล่สีสันอ่อนๆ */
         body { background: linear-gradient(135deg, #fef2f2 0%, #fff1f2 50%, #eff6ff 100%); color: #1e293b; overflow-x: hidden; }
         
         .grid-container {
             display: grid;
             aspect-ratio: 1 / 1;
-            width: 100%;
-            max-width: 750px; /* เพิ่ม max-width ให้รองรับจอที่กว้างขึ้น */
+            height: 100%;
+            max-height: 100%;
+            max-width: 100%;
             background-color: #f8fafc;
             border: 4px solid #ef4444;
             border-radius: 12px;
@@ -81,7 +81,7 @@
         .robot-glow { filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.4)); }
     </style>
 </head>
-<body class="h-screen flex flex-col font-sans">
+<body class="h-screen flex flex-col font-sans overflow-hidden">
 
     <!-- Home Screen Overlay -->
     <div id="home-screen" class="fixed inset-0 bg-stem-bg z-[100] flex flex-col items-center justify-center p-4">
@@ -112,76 +112,76 @@
         </div>
     </div>
 
-    <!-- Header -->
-    <header class="bg-white shadow-md p-4 flex flex-col sm:flex-row justify-between items-center gap-2 z-20 border-b-2 border-red-200">
+    <!-- Header (ปรับขนาดให้กะทัดรัดขึ้น) -->
+    <header class="bg-white shadow-md px-4 py-2 flex flex-col sm:flex-row justify-between items-center gap-2 z-20 border-b-2 border-red-200 shrink-0">
         <div class="flex items-center gap-3">
-            <i class="fa-solid fa-robot text-stem-primary text-3xl"></i>
-            <h1 class="text-xl md:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-red-400">
+            <i class="fa-solid fa-robot text-stem-primary text-2xl"></i>
+            <h1 class="text-lg md:text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-red-400">
                 SMR Coding Challenge
             </h1>
         </div>
-        <div class="flex gap-4 bg-red-50 p-2 rounded-lg border border-red-200 shadow-sm flex-wrap justify-center">
+        <div class="flex gap-3 bg-red-50 p-1.5 rounded-lg border border-red-200 shadow-sm flex-wrap justify-center text-sm">
             <div class="flex flex-col items-center px-2 border-r border-red-200">
-                <span class="text-xs text-slate-500 font-semibold">ผู้เล่น</span>
-                <span id="player-name-display" class="font-bold text-blue-600 text-lg">-</span>
+                <span class="text-[10px] text-slate-500 font-semibold">ผู้เล่น</span>
+                <span id="player-name-display" class="font-bold text-blue-600 text-base">-</span>
             </div>
             <div class="flex flex-col items-center px-2 border-r border-red-200">
-                <span class="text-xs text-slate-500 font-semibold">เวลา</span>
-                <span id="timer-display" class="font-bold text-slate-700 text-lg">00:00</span>
+                <span class="text-[10px] text-slate-500 font-semibold">เวลา</span>
+                <span id="timer-display" class="font-bold text-slate-700 text-base">00:00</span>
             </div>
             <div class="flex flex-col items-center px-2 border-r border-red-200">
-                <span class="text-xs text-slate-500 font-semibold">คะแนน</span>
-                <span id="score-display" class="font-bold text-stem-primary text-lg">0</span>
+                <span class="text-[10px] text-slate-500 font-semibold">คะแนน</span>
+                <span id="score-display" class="font-bold text-stem-primary text-base">0</span>
             </div>
             <div class="flex flex-col items-center px-2 border-r border-red-200">
-                <span class="text-xs text-slate-500 font-semibold">เหรียญ</span>
-                <span id="coin-display" class="font-bold text-yellow-500 text-lg">0</span>
+                <span class="text-[10px] text-slate-500 font-semibold">เหรียญ</span>
+                <span id="coin-display" class="font-bold text-yellow-500 text-base">0</span>
             </div>
             <div class="flex flex-col items-center px-2">
-                <span class="text-xs text-slate-500 font-semibold">ด่าน</span>
-                <span id="level-display" class="font-bold text-stem-success text-lg">1</span>
+                <span class="text-[10px] text-slate-500 font-semibold">ด่าน</span>
+                <span id="level-display" class="font-bold text-stem-success text-base">1</span>
             </div>
         </div>
     </header>
 
-    <!-- Chapter Selection -->
-    <div class="flex flex-wrap justify-center gap-2 md:gap-3 p-3 bg-white/90 border-b border-red-100 z-10 relative shadow-sm">
-        <button id="btn-ch1" onclick="gotoChapter(1)" class="px-3 py-1.5 rounded-full bg-stem-primary text-white text-xs md:text-sm font-bold shadow transition-all hover:scale-105">บทที่ 1 (1-5)</button>
-        <button id="btn-ch2" onclick="gotoChapter(2)" class="px-3 py-1.5 rounded-full bg-red-100 text-red-800 hover:bg-red-200 text-xs md:text-sm font-bold shadow transition-all hover:scale-105">บทที่ 2 (6-10)</button>
-        <button id="btn-ch3" onclick="gotoChapter(3)" class="px-3 py-1.5 rounded-full bg-red-100 text-red-800 hover:bg-red-200 text-xs md:text-sm font-bold shadow transition-all hover:scale-105">บทที่ 3 (11-15)</button>
-        <button id="btn-ch4" onclick="gotoChapter(4)" class="px-3 py-1.5 rounded-full bg-red-100 text-red-800 hover:bg-red-200 text-xs md:text-sm font-bold shadow transition-all hover:scale-105">บทที่ 4 (16-20)</button>
-        <button id="btn-ch5" onclick="gotoChapter(5)" class="px-3 py-1.5 rounded-full bg-red-100 text-red-800 hover:bg-red-200 text-xs md:text-sm font-bold shadow transition-all hover:scale-105">บทที่ 5 (21-25)</button>
-        <button id="btn-ch6" onclick="gotoChapter(6)" class="px-3 py-1.5 rounded-full bg-red-100 text-red-800 hover:bg-red-200 text-xs md:text-sm font-bold shadow transition-all hover:scale-105">บทที่ 6 (26-30)</button>
-        <button id="btn-ch7" onclick="gotoChapter(7)" class="px-3 py-1.5 rounded-full bg-red-100 text-red-800 hover:bg-red-200 text-xs md:text-sm font-bold shadow transition-all hover:scale-105">บทที่ 7 (31-35) 🔴🔵🟡</button>
-        <button id="btn-ch8" onclick="gotoChapter(8)" class="px-3 py-1.5 rounded-full bg-red-100 text-red-800 hover:bg-red-200 text-xs md:text-sm font-bold shadow transition-all hover:scale-105">บทที่ 8 (36-40) 👑</button>
+    <!-- Chapter Selection (กระชับระยะห่าง) -->
+    <div class="flex flex-wrap justify-center gap-1.5 md:gap-2 py-1.5 px-3 bg-white/90 border-b border-red-100 z-10 relative shadow-sm shrink-0">
+        <button id="btn-ch1" onclick="gotoChapter(1)" class="px-2.5 py-1 rounded-full bg-stem-primary text-white text-xs font-bold shadow transition-all hover:scale-105">บทที่ 1 (1-5)</button>
+        <button id="btn-ch2" onclick="gotoChapter(2)" class="px-2.5 py-1 rounded-full bg-red-100 text-red-800 hover:bg-red-200 text-xs font-bold shadow transition-all hover:scale-105">บทที่ 2 (6-10)</button>
+        <button id="btn-ch3" onclick="gotoChapter(3)" class="px-2.5 py-1 rounded-full bg-red-100 text-red-800 hover:bg-red-200 text-xs font-bold shadow transition-all hover:scale-105">บทที่ 3 (11-15)</button>
+        <button id="btn-ch4" onclick="gotoChapter(4)" class="px-2.5 py-1 rounded-full bg-red-100 text-red-800 hover:bg-red-200 text-xs font-bold shadow transition-all hover:scale-105">บทที่ 4 (16-20)</button>
+        <button id="btn-ch5" onclick="gotoChapter(5)" class="px-2.5 py-1 rounded-full bg-red-100 text-red-800 hover:bg-red-200 text-xs font-bold shadow transition-all hover:scale-105">บทที่ 5 (21-25)</button>
+        <button id="btn-ch6" onclick="gotoChapter(6)" class="px-2.5 py-1 rounded-full bg-red-100 text-red-800 hover:bg-red-200 text-xs font-bold shadow transition-all hover:scale-105">บทที่ 6 (26-30)</button>
+        <button id="btn-ch7" onclick="gotoChapter(7)" class="px-2.5 py-1 rounded-full bg-red-100 text-red-800 hover:bg-red-200 text-xs font-bold shadow transition-all hover:scale-105">บทที่ 7 (31-35) 🔴🔵🟡</button>
+        <button id="btn-ch8" onclick="gotoChapter(8)" class="px-2.5 py-1 rounded-full bg-red-100 text-red-800 hover:bg-red-200 text-xs font-bold shadow transition-all hover:scale-105">บทที่ 8 (36-40) 👑</button>
     </div>
 
     <!-- Main Content -->
-    <!-- ปรับคอลัมน์ซ้ายกว้าง 60% (w-3/5) และขวากว้าง 40% (w-2/5) -->
-    <main class="flex-1 overflow-hidden flex flex-col lg:flex-row p-2 lg:p-4 gap-4">
+    <main class="flex-1 overflow-hidden flex flex-col lg:flex-row p-2 lg:p-3 gap-3">
         
-        <!-- Left: Game Area (ปรับเป็น 3/5) -->
-        <section class="w-full lg:w-3/5 flex flex-col">
-            <div class="bg-white/90 backdrop-blur-sm rounded-xl p-4 flex-1 flex flex-col relative shadow-lg border border-blue-100">
-                <h2 id="level-title" class="text-lg font-bold text-center mb-4 text-slate-800 bg-gradient-to-r from-blue-100 to-red-100 py-2 rounded-lg">ด่านที่ 1: เดินหน้า</h2>
+        <!-- Left: Game Area (ปรับขนาดแบบ Auto-fit เต็มความสูงแบบไม่โดนตัด) -->
+        <section class="w-full lg:w-3/5 flex flex-col h-full min-h-0">
+            <div class="bg-white/90 backdrop-blur-sm rounded-xl p-3 flex-1 flex flex-col relative shadow-lg border border-blue-100 min-h-0">
+                <h2 id="level-title" class="text-base font-bold text-center mb-2 text-slate-800 bg-gradient-to-r from-blue-100 to-red-100 py-1 rounded-lg shrink-0">ด่านที่ 1: เดินหน้า</h2>
                 
                 <!-- Game Controls -->
-                <div class="mb-4 flex justify-center gap-3">
-                    <button id="btn-run" class="bg-gradient-to-b from-emerald-400 to-emerald-600 hover:from-emerald-500 hover:to-emerald-700 text-white font-bold py-2 px-6 rounded-full shadow-lg shadow-emerald-500/30 transition-all flex items-center gap-2 border border-emerald-700">
-                        <i class="fa-solid fa-play"></i> Run
+                <div class="mb-2 flex justify-center gap-2 shrink-0">
+                    <button id="btn-run" class="bg-gradient-to-b from-emerald-400 to-emerald-600 hover:from-emerald-500 hover:to-emerald-700 text-white font-bold py-1.5 px-5 rounded-full shadow-md text-sm transition-all flex items-center gap-1.5 border border-emerald-700">
+                        <i class="fa-solid fa-play text-xs"></i> Run
                     </button>
-                    <button id="btn-reset" class="bg-gradient-to-b from-slate-200 to-slate-300 hover:from-slate-300 hover:to-slate-400 text-slate-700 font-bold py-2 px-6 rounded-full shadow transition-all flex items-center gap-2 border border-slate-400">
-                        <i class="fa-solid fa-rotate-left"></i> Reset
+                    <button id="btn-reset" class="bg-gradient-to-b from-slate-200 to-slate-300 hover:from-slate-300 hover:to-slate-400 text-slate-700 font-bold py-1.5 px-5 rounded-full shadow text-sm transition-all flex items-center gap-1.5 border border-slate-400">
+                        <i class="fa-solid fa-rotate-left text-xs"></i> Reset
                     </button>
-                    <button id="btn-skip" class="bg-gradient-to-b from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white font-bold py-2 px-6 rounded-full shadow transition-all flex items-center gap-2 border border-orange-600">
-                        <i class="fa-solid fa-forward"></i> ข้ามด่าน
+                    <button id="btn-skip" class="bg-gradient-to-b from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white font-bold py-1.5 px-5 rounded-full shadow text-sm transition-all flex items-center gap-1.5 border border-orange-600">
+                        <i class="fa-solid fa-forward text-xs"></i> ข้ามด่าน
                     </button>
-                    <button id="btn-next" class="hidden bg-gradient-to-b from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-2 px-6 rounded-full shadow-lg transition-all flex items-center gap-2">
-                        <i class="fa-solid fa-forward-step"></i> Next Level
+                    <button id="btn-next" class="hidden bg-gradient-to-b from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-1.5 px-5 rounded-full shadow-md text-sm transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-forward-step text-xs"></i> Next Level
                     </button>
                 </div>
 
-                <div class="flex-1 flex items-center justify-center">
+                <!-- สนามหุ่นยนต์ย่อตามพื้นที่ที่มี -->
+                <div class="flex-1 flex items-center justify-center min-h-0 p-1">
                     <div id="grid-board" class="grid-container">
                         <!-- Robot -->
                         <div id="robot">
@@ -215,74 +215,73 @@
             </div>
         </section>
 
-        <!-- Right: Coding & AI Area (ปรับเป็น 2/5) -->
-        <section class="w-full lg:w-2/5 flex flex-col gap-4 h-[60vh] lg:h-auto">
+        <!-- Right: Coding & AI Area -->
+        <section class="w-full lg:w-2/5 flex flex-col gap-3 h-full min-h-0">
             
             <!-- Blockly / Workspace -->
-            <div class="bg-white/90 backdrop-blur-sm rounded-xl p-4 flex-1 flex flex-col shadow-lg border border-red-100">
-                <h3 class="font-bold text-slate-800 mb-2 text-sm"><i class="fa-solid fa-toolbox text-stem-primary"></i> ลากคำสั่งไปวางด้านล่าง</h3>
+            <div class="bg-white/90 backdrop-blur-sm rounded-xl p-3 flex-1 flex flex-col shadow-lg border border-red-100 min-h-0">
+                <h3 class="font-bold text-slate-800 mb-2 text-xs md:text-sm shrink-0"><i class="fa-solid fa-toolbox text-stem-primary"></i> ลากคำสั่งไปวางด้านล่าง</h3>
                 
-                <!-- ปรับปุ่มให้เป็นแนวนอน (flex-row) และสั้นลง (h-10) พร้อมไล่สีสวยงาม -->
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
-                    <div draggable="true" ondragstart="dragStart(event, 'forward')" onclick="addBlock('forward')" class="block-item bg-gradient-to-b from-blue-400 to-blue-600 rounded-lg p-1 text-center shadow-md flex flex-row items-center justify-center gap-1.5 h-10 md:h-12 text-white border-b-4 border-blue-700">
-                        <i class="fa-solid fa-arrow-up text-xs md:text-sm"></i><span class="text-[10px] md:text-xs font-bold">เดินหน้า</span>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-1.5 mb-2 shrink-0">
+                    <div draggable="true" ondragstart="dragStart(event, 'forward')" onclick="addBlock('forward')" class="block-item bg-gradient-to-b from-blue-400 to-blue-600 rounded-lg p-1 text-center shadow-sm flex flex-row items-center justify-center gap-1.5 h-9 text-white border-b-2 border-blue-700">
+                        <i class="fa-solid fa-arrow-up text-xs"></i><span class="text-[10px] font-bold">เดินหน้า</span>
                     </div>
-                    <div draggable="true" ondragstart="dragStart(event, 'backward')" onclick="addBlock('backward')" class="block-item bg-gradient-to-b from-indigo-400 to-indigo-600 rounded-lg p-1 text-center shadow-md flex flex-row items-center justify-center gap-1.5 h-10 md:h-12 text-white border-b-4 border-indigo-700">
-                        <i class="fa-solid fa-arrow-down text-xs md:text-sm"></i><span class="text-[10px] md:text-xs font-bold">ถอยหลัง</span>
+                    <div draggable="true" ondragstart="dragStart(event, 'backward')" onclick="addBlock('backward')" class="block-item bg-gradient-to-b from-indigo-400 to-indigo-600 rounded-lg p-1 text-center shadow-sm flex flex-row items-center justify-center gap-1.5 h-9 text-white border-b-2 border-indigo-700">
+                        <i class="fa-solid fa-arrow-down text-xs"></i><span class="text-[10px] font-bold">ถอยหลัง</span>
                     </div>
-                    <div draggable="true" ondragstart="dragStart(event, 'left')" onclick="addBlock('left')" class="block-item bg-gradient-to-b from-purple-400 to-purple-600 rounded-lg p-1 text-center shadow-md flex flex-row items-center justify-center gap-1.5 h-10 md:h-12 text-white border-b-4 border-purple-700">
-                        <i class="fa-solid fa-rotate-left text-xs md:text-sm"></i><span class="text-[10px] md:text-xs font-bold">เลี้ยวซ้าย</span>
+                    <div draggable="true" ondragstart="dragStart(event, 'left')" onclick="addBlock('left')" class="block-item bg-gradient-to-b from-purple-400 to-purple-600 rounded-lg p-1 text-center shadow-sm flex flex-row items-center justify-center gap-1.5 h-9 text-white border-b-2 border-purple-700">
+                        <i class="fa-solid fa-rotate-left text-xs"></i><span class="text-[10px] font-bold">เลี้ยวซ้าย</span>
                     </div>
-                    <div draggable="true" ondragstart="dragStart(event, 'right')" onclick="addBlock('right')" class="block-item bg-gradient-to-b from-pink-400 to-pink-600 rounded-lg p-1 text-center shadow-md flex flex-row items-center justify-center gap-1.5 h-10 md:h-12 text-white border-b-4 border-pink-700">
-                        <i class="fa-solid fa-rotate-right text-xs md:text-sm"></i><span class="text-[10px] md:text-xs font-bold">เลี้ยวขวา</span>
+                    <div draggable="true" ondragstart="dragStart(event, 'right')" onclick="addBlock('right')" class="block-item bg-gradient-to-b from-pink-400 to-pink-600 rounded-lg p-1 text-center shadow-sm flex flex-row items-center justify-center gap-1.5 h-9 text-white border-b-2 border-pink-700">
+                        <i class="fa-solid fa-rotate-right text-xs"></i><span class="text-[10px] font-bold">เลี้ยวขวา</span>
                     </div>
-                    <div draggable="true" ondragstart="dragStart(event, 'pick')" onclick="addBlock('pick')" class="block-item bg-gradient-to-b from-emerald-400 to-emerald-600 rounded-lg p-1 text-center shadow-md flex flex-row items-center justify-center gap-1.5 h-10 md:h-12 text-white border-b-4 border-emerald-700">
-                        <i class="fa-solid fa-hand-paper text-xs md:text-sm"></i><span class="text-[10px] md:text-xs font-bold">คีบ</span>
+                    <div draggable="true" ondragstart="dragStart(event, 'pick')" onclick="addBlock('pick')" class="block-item bg-gradient-to-b from-emerald-400 to-emerald-600 rounded-lg p-1 text-center shadow-sm flex flex-row items-center justify-center gap-1.5 h-9 text-white border-b-2 border-emerald-700">
+                        <i class="fa-solid fa-hand-paper text-xs"></i><span class="text-[10px] font-bold">คีบ</span>
                     </div>
-                    <div draggable="true" ondragstart="dragStart(event, 'drop')" onclick="addBlock('drop')" class="block-item bg-gradient-to-b from-yellow-300 to-yellow-500 rounded-lg p-1 text-center shadow-md flex flex-row items-center justify-center gap-1.5 h-10 md:h-12 text-slate-900 border-b-4 border-yellow-600">
-                        <i class="fa-solid fa-hand-back-fist text-xs md:text-sm"></i><span class="text-[10px] md:text-xs font-bold">ปล่อย</span>
+                    <div draggable="true" ondragstart="dragStart(event, 'drop')" onclick="addBlock('drop')" class="block-item bg-gradient-to-b from-yellow-300 to-yellow-500 rounded-lg p-1 text-center shadow-sm flex flex-row items-center justify-center gap-1.5 h-9 text-slate-900 border-b-2 border-yellow-600">
+                        <i class="fa-solid fa-hand-back-fist text-xs"></i><span class="text-[10px] font-bold">ปล่อย</span>
                     </div>
-                    <div draggable="true" ondragstart="dragStart(event, 'random')" onclick="addBlock('random')" class="block-item bg-gradient-to-b from-cyan-400 to-cyan-600 rounded-lg p-1 text-center shadow-md flex flex-row items-center justify-center gap-1.5 h-10 md:h-12 text-white border-b-4 border-cyan-700">
-                        <i class="fa-solid fa-shuffle text-xs md:text-sm"></i><span class="text-[10px] md:text-xs font-bold">สุ่ม</span>
+                    <div draggable="true" ondragstart="dragStart(event, 'random')" onclick="addBlock('random')" class="block-item bg-gradient-to-b from-cyan-400 to-cyan-600 rounded-lg p-1 text-center shadow-sm flex flex-row items-center justify-center gap-1.5 h-9 text-white border-b-2 border-cyan-700">
+                        <i class="fa-solid fa-shuffle text-xs"></i><span class="text-[10px] font-bold">สุ่ม</span>
                     </div>
-                    <div draggable="true" ondragstart="dragStart(event, 'loop')" onclick="addBlock('loop')" class="block-item bg-gradient-to-b from-orange-400 to-orange-600 rounded-lg p-1 text-center shadow-md flex flex-row items-center justify-center gap-1.5 h-10 md:h-12 text-white border-b-4 border-orange-700">
-                        <i class="fa-solid fa-repeat text-xs md:text-sm"></i><span class="text-[10px] md:text-xs font-bold">ทำซ้ำ(2x)</span>
+                    <div draggable="true" ondragstart="dragStart(event, 'loop')" onclick="addBlock('loop')" class="block-item bg-gradient-to-b from-orange-400 to-orange-600 rounded-lg p-1 text-center shadow-sm flex flex-row items-center justify-center gap-1.5 h-9 text-white border-b-2 border-orange-700">
+                        <i class="fa-solid fa-repeat text-xs"></i><span class="text-[10px] font-bold">ทำซ้ำ(2x)</span>
                     </div>
                 </div>
 
-                <div class="flex justify-between items-center mb-2">
-                    <h3 class="font-bold text-slate-800 text-sm"><i class="fa-solid fa-code text-stem-primary"></i> พื้นที่เขียนคำสั่ง</h3>
-                    <button onclick="clearWorkspace()" class="text-[10px] text-red-500 hover:text-red-700 bg-red-100 hover:bg-red-200 px-2 py-1 rounded transition-colors">ล้างทั้งหมด <i class="fa-solid fa-trash"></i></button>
+                <div class="flex justify-between items-center mb-1.5 shrink-0">
+                    <h3 class="font-bold text-slate-800 text-xs md:text-sm"><i class="fa-solid fa-code text-stem-primary"></i> พื้นที่เขียนคำสั่ง</h3>
+                    <button onclick="clearWorkspace()" class="text-[10px] text-red-500 hover:text-red-700 bg-red-100 hover:bg-red-200 px-2 py-0.5 rounded transition-colors">ล้างทั้งหมด <i class="fa-solid fa-trash"></i></button>
                 </div>
                 
                 <!-- Workspace List -->
-                <div id="workspace" ondrop="dropBlock(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" class="flex-1 bg-gradient-to-b from-red-50 to-white rounded-lg p-2 overflow-y-auto flex flex-col gap-1.5 border-2 border-red-300 border-dashed min-h-[150px] max-h-[200px] md:max-h-[300px] transition-colors shadow-inner">
-                    <div id="workspace-empty" class="text-slate-400 text-center mt-10 text-xs md:text-sm pointer-events-none">
+                <div id="workspace" ondrop="dropBlock(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" class="flex-1 bg-gradient-to-b from-red-50 to-white rounded-lg p-2 overflow-y-auto flex flex-col gap-1.5 border-2 border-red-300 border-dashed min-h-0 transition-colors shadow-inner">
+                    <div id="workspace-empty" class="text-slate-400 text-center my-auto text-xs pointer-events-none">
                         ลากคำสั่งจากกล่องเครื่องมือ<br>มาวางตรงนี้เลย!
                     </div>
                 </div>
             </div>
 
             <!-- AI Chat -->
-            <div class="bg-white/90 backdrop-blur-sm rounded-xl p-4 h-64 flex flex-col shadow-lg border border-purple-100">
-                <div class="flex items-center gap-2 mb-2 pb-2 border-b border-purple-100">
-                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-purple-200 to-purple-400 flex items-center justify-center shadow-sm">
-                        <i class="fa-solid fa-robot text-white"></i>
+            <div class="bg-white/90 backdrop-blur-sm rounded-xl p-3 h-48 md:h-56 flex flex-col shadow-lg border border-purple-100 shrink-0">
+                <div class="flex items-center gap-2 mb-1.5 pb-1.5 border-b border-purple-100 shrink-0">
+                    <div class="w-7 h-7 rounded-full bg-gradient-to-br from-purple-200 to-purple-400 flex items-center justify-center shadow-sm">
+                        <i class="fa-solid fa-robot text-white text-xs"></i>
                     </div>
-                    <h3 class="font-bold text-slate-800 text-sm md:text-base">ผู้ช่วย AI</h3>
+                    <h3 class="font-bold text-slate-800 text-xs md:text-sm">ผู้ช่วย AI</h3>
                 </div>
                 
-                <div id="chat-history" class="flex-1 bg-slate-50/50 rounded-lg p-3 overflow-y-auto flex flex-col gap-3 text-sm border border-slate-100 shadow-inner">
+                <div id="chat-history" class="flex-1 bg-slate-50/50 rounded-lg p-2 overflow-y-auto flex flex-col gap-2 text-xs border border-slate-100 shadow-inner">
                     <div class="flex gap-2">
-                        <div class="bg-white text-slate-700 p-2 rounded-lg rounded-tl-none border border-purple-200 max-w-[85%] text-xs md:text-sm shadow-sm">
+                        <div class="bg-white text-slate-700 p-2 rounded-lg rounded-tl-none border border-purple-200 max-w-[85%] text-xs shadow-sm">
                             สวัสดีครับ! ด่านใหม่รออยู่ ลองดูทางหนีทีไล่ให้ดีก่อนเขียนโค้ดล่ะ 🤖✨
                         </div>
                     </div>
                 </div>
                 
-                <div class="mt-2 flex gap-2">
-                    <input type="text" id="ai-input" placeholder="ถามผู้ช่วย AI เช่น ใช้วิธีแยกสียังไง?" class="flex-1 bg-white text-slate-800 px-3 py-2 rounded-lg outline-none focus:ring-2 focus:ring-purple-400 transition-all text-xs md:text-sm border border-slate-200 shadow-sm">
-                    <button id="btn-send-ai" class="bg-gradient-to-b from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white px-4 py-2 rounded-lg transition-all shadow-md">
+                <div class="mt-2 flex gap-1.5 shrink-0">
+                    <input type="text" id="ai-input" placeholder="ถามผู้ช่วย AI เช่น ใช้วิธีแยกสียังไง?" class="flex-1 bg-white text-slate-800 px-3 py-1.5 rounded-lg outline-none focus:ring-2 focus:ring-purple-400 transition-all text-xs border border-slate-200 shadow-sm">
+                    <button id="btn-send-ai" class="bg-gradient-to-b from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white px-3 py-1.5 rounded-lg transition-all shadow-md text-xs">
                         <i class="fa-solid fa-paper-plane"></i>
                     </button>
                 </div>
@@ -896,9 +895,9 @@
                 document.getElementById('btn-ch8')
             ];
             btns.forEach(btn => { 
-                if(btn) btn.className = "px-3 py-1.5 rounded-full bg-red-100 text-red-800 hover:bg-red-200 text-xs md:text-sm font-bold shadow transition-all hover:scale-105 border border-red-200"; 
+                if(btn) btn.className = "px-2.5 py-1 rounded-full bg-red-100 text-red-800 hover:bg-red-200 text-xs font-bold shadow transition-all hover:scale-105 border border-red-200"; 
             });
-            const activeClass = "px-3 py-1.5 rounded-full bg-gradient-to-r from-red-500 to-red-600 text-white text-xs md:text-sm font-bold shadow-lg transition-all hover:scale-105 border border-red-700";
+            const activeClass = "px-2.5 py-1 rounded-full bg-gradient-to-r from-red-500 to-red-600 text-white text-xs font-bold shadow-md transition-all hover:scale-105 border border-red-700";
             if (idx >= 0 && idx <= 4 && btns[0]) btns[0].className = activeClass;
             else if (idx >= 5 && idx <= 9 && btns[1]) btns[1].className = activeClass;
             else if (idx >= 10 && idx <= 14 && btns[2]) btns[2].className = activeClass;
@@ -910,7 +909,6 @@
         }
 
         // --- BLOCKLY LOGIC & DRAG AND DROP ---
-        // ปรับ CSS class ใน getBlockDetails ให้ตรงกับสไตล์ปุ่มคำสั่งใหม่
         function getBlockDetails(type) {
             const map = {
                 'forward': { color: 'bg-gradient-to-b from-blue-400 to-blue-600 border-blue-700', text: 'เดินหน้า', icon: 'fa-arrow-up', textCol: 'text-white' },
@@ -950,7 +948,7 @@
             const el = document.createElement('div');
             el.id = id;
             const closeBtnClass = type === 'drop' ? 'text-slate-900 hover:text-red-500' : 'text-white/80 hover:text-red-200';
-            el.className = `${b.color} ${b.textCol} px-3 py-2 rounded-lg shadow-md border-b-4 flex items-center justify-between cursor-pointer transform hover:scale-[1.01] transition-transform text-xs md:text-sm font-semibold`;
+            el.className = `${b.color} ${b.textCol} px-2.5 py-1.5 rounded-lg shadow-sm border-b-2 flex items-center justify-between cursor-pointer transform hover:scale-[1.01] transition-transform text-xs font-semibold shrink-0`;
             el.innerHTML = `
                 <div class="flex items-center gap-2"><i class="fa-solid ${b.icon}"></i> <span>${b.text}</span></div>
                 <i class="fa-solid fa-xmark ${closeBtnClass}" onclick="removeBlock(event, '${id}')"></i>
